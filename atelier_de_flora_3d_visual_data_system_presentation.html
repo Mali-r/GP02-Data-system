@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelier de Flora | Interactive 3D System Presentation - Team McKraken</title>
+    
+    <!-- External Fonts and Icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            900: '#14532d'
+                        },
+                        cyanSignal: '#06b6d4',
+                        blueSignal: '#38bdf8',
+                        violetAccent: '#8b5cf6',
+                        darkText: '#0f172a',
+                        mutedText: '#64748b',
+                        surfaceBg: '#f8fafc',
+                        borderLight: '#e2e8f0'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Space Grotesk', 'sans-serif'],
+                        mono: ['IBM Plex Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-grid: #e2e8f0;
+            --signal-cyan: #06b6d4;
+            --signal-green: #22c55e;
+            --signal-violet: #8b5cf6;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Ambient White Grid Canvas Background */
+        .grid-background {
+            background-size: 32px 32px;
+            background-image: 
+                radial-gradient(circle, #cbd5e1 1.2px, transparent 1.2px);
+        }
+
+        /* Glassmorphism Styles */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+        }
+
+        .glass-card-hover {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-4px) scale(1.01);
+            background: rgba(255, 255, 255, 0.92);
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.15);
+        }
+
+        .glass-modal {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(203, 213, 225, 0.9);
+            box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.2);
+        }
+
+        /* 3D Perspective Transformations */
+        .perspective-container {
+            perspective: 1200px;
+        }
+
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+
+        .tilted-engine-layer {
+            transform: rotateX(28deg) rotateZ(-12deg) rotateY(6deg);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .tilted-engine-layer:hover {
+            transform: rotateX(15deg) rotateZ(-4deg) rotateY(2deg) translateZ(10px);
+        }
+
+        /* Custom Dynamic SVG Signals */
+        .pulse-path {
+            stroke-dasharray: 8, 8;
+            animation: strokeDash 25s linear infinite;
+        }
+
+        @keyframes strokeDash {
+            to { stroke-dashoffset: -1000; }
+        }
+
+        .photon-packet {
+            animation: movePacket 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Floating Animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(0.5deg); }
+        }
+
+        .animate-float-slow {
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+            animation: floatSlow 7s ease-in-out 2s infinite;
+        }
+
+        /* Modal Zoom Depth Transitions */
+        .universe-zoom-out {
+            transform: scale(0.85) translateZ(-200px);
+            filter: blur(6px);
+            opacity: 0.3;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .modal-zoom-in {
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="grid-background min-h-screen text-slate-800 antialiased selection:bg-cyan-100 selection:text-cyan-900">
+
+    <!-- Fixed Navigation Bar -->
+    <header class="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 px-4 md:px-8 py-3 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 via-emerald-500 to-indigo-500 p-[2px] shadow-sm">
+                    <div class="w-full h-full bg-white rounded-[6px] flex items-center justify-center">
+                        <i class="fa-solid fa-cube text-xs text-cyan-600"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-heading font-bold text-slate-900 tracking-tight text-sm md:text-base">Atelier de Flora</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200/60 font-medium">Team McKraken</span>
+                    </div>
+                    <p class="text-[11px] text-slate-500 font-mono hidden md:block">3D System Visual Architecture • Final Presentation</p>
+                </div>
+            </div>
+
+            <!-- Header Section Quick Links -->
+            <nav class="hidden lg:flex items-center space-x-1 font-mono text-xs">
+                <a href="#hero" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">01 Concept</a>
+                <a href="#floating-universe" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">02 Features</a>
+                <a href="#backend-engine" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">03 Engine</a>
+                <a href="#auth-flow" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">04 Security</a>
+                <a href="#mongodb-schema" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">05 Data Map</a>
+                <a href="#sprint-kanban" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">06 Team Work</a>
+                <a href="#system-impact" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">07 Impact</a>
+            </nav>
+
+            <!-- External Deployment & Board Links -->
+            <div class="flex items-center space-x-2">
+                <a href="https://jsd-13-group-project2-mc-kraken-spr.vercel.app/" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white font-mono text-xs font-medium hover:bg-slate-800 transition-all flex items-center space-x-1.5 shadow-sm">
+                    <i class="fa-solid fa-globe text-cyan-400"></i>
+                    <span>Live Web</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
+                </a>
+                <a href="https://miro.com/app/board/uXjVHuvGF_0=/" target="_blank" class="px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-700 border border-amber-300/60 font-mono text-xs font-medium hover:bg-amber-500/20 transition-all flex items-center space-x-1.5">
+                    <i class="fa-solid fa-chalkboard text-amber-600"></i>
+                    <span>Miro Board</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 1: HERO & SYSTEM PIPELINE -->
+    <section id="hero" class="pt-28 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-5 space-y-6">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-mono text-xs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>System Online • All Pipelines Operational</span>
+                </div>
+
+                <h1 class="text-4xl md:text-5xl font-heading font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Atelier de Flora
+                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-teal-600 to-indigo-600 text-3xl md:text-4xl mt-1">
+                        Full-Stack E-commerce Universe
+                    </span>
+                </h1>
+
+                <p class="text-slate-600 text-sm md:text-base leading-relaxed">
+                    Explore the 6th-dimensional data ecosystem behind the Atelier de Flora boutique flower platform. Unveiling end-to-end component flows, REST API contracts, backend logic handlers, security middleware, and Mongoose data persistence.
+                </p>
+
+                <div class="flex flex-wrap gap-3 font-mono text-xs pt-2">
+                    <div class="px-3 py-2 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center space-x-2">
+                        <i class="fa-brands fa-react text-cyan-500 text-base"></i>
+                        <span>React 19 + Vite</span>
+                    </div>
+                    <div class="px-3 py-2 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center space-x-2">
+                        <i class="fa-brands fa-node-js text-emerald-600 text-base"></i>
+                        <span>Node.js Express</span>
+                    </div>
+                    <div class="px-3 py-2 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-database text-emerald-500 text-base"></i>
+                        <span>MongoDB Atlas</span>
+                    </div>
+                    <div class="px-3 py-2 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-server text-indigo-500 text-base"></i>
+                        <span>Vercel + Render</span>
+                    </div>
+                </div>
+
+                <div class="pt-2 flex items-center space-x-4">
+                    <a href="#floating-universe" class="px-5 py-3 rounded-xl bg-cyan-600 text-white font-medium text-sm shadow-md hover:bg-cyan-700 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-diagram-project"></i>
+                        <span>Enter Task Universe</span>
+                    </a>
+                    <a href="#backend-engine" class="px-5 py-3 rounded-xl bg-white text-slate-700 border border-slate-200 text-sm font-medium hover:bg-slate-50 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-microchip text-slate-500"></i>
+                        <span>Backend Engine</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Top-level Architecture Flow Map -->
+            <div class="lg:col-span-7">
+                <div class="glass-card rounded-2xl p-6 relative overflow-hidden border border-slate-200/80">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                            <span class="font-mono text-xs text-slate-500 ml-2">system_architecture_overview.svg</span>
+                        </div>
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">LIVE SIGNAL</span>
+                    </div>
+
+                    <!-- Flow Diagram Grid -->
+                    <div class="relative py-4">
+                        <div class="grid grid-cols-5 gap-2 text-center relative z-10 font-mono">
+                            <!-- Node 1: User Client -->
+                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-cyan-400 transition-all">
+                                <div class="w-10 h-10 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-lg font-bold">
+                                    <i class="fa-solid fa-laptop-code"></i>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">CLIENT</span>
+                                <span class="text-[10px] text-slate-400">Browser / UI</span>
+                            </div>
+
+                            <!-- Node 2: Frontend App -->
+                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-cyan-400 transition-all">
+                                <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg font-bold">
+                                    <i class="fa-brands fa-react"></i>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">FRONTEND</span>
+                                <span class="text-[10px] text-slate-400">Vercel React 19</span>
+                            </div>
+
+                            <!-- Node 3: REST API Gateway -->
+                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-violet-400 transition-all">
+                                <div class="w-10 h-10 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center text-lg font-bold">
+                                    <i class="fa-solid fa-network-wired"></i>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">REST API</span>
+                                <span class="text-[10px] text-slate-400">/api/v1 Routes</span>
+                            </div>
+
+                            <!-- Node 4: Express Backend -->
+                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-emerald-400 transition-all">
+                                <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">
+                                    <i class="fa-brands fa-node-js"></i>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">BACKEND</span>
+                                <span class="text-[10px] text-slate-400">Render Node Server</span>
+                            </div>
+
+                            <!-- Node 5: MongoDB Core -->
+                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-emerald-500 transition-all">
+                                <div class="w-10 h-10 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-lg font-bold">
+                                    <i class="fa-solid fa-database"></i>
+                                </div>
+                                <span class="text-xs font-semibold text-slate-800">MONGODB</span>
+                                <span class="text-[10px] text-slate-400">FlowerShop DB</span>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Connecting Lines SVG Overlay -->
+                        <svg class="absolute top-1/2 left-0 w-full h-8 -translate-y-1/2 pointer-events-none z-0" overflow="visible">
+                            <line x1="10%" y1="50%" x2="90%" y2="50%" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="4 4" />
+                            <circle cx="20%" cy="50%" r="4" fill="#06b6d4">
+                                <animate attributeName="cx" values="10%;90%;10%" dur="4s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="40%" cy="50%" r="4" fill="#22c55e">
+                                <animate attributeName="cx" values="90%;10%;90%" dur="5s" repeatCount="indefinite" />
+                            </circle>
+                        </svg>
+                    </div>
+
+                    <!-- Micro System Stats Footer -->
+                    <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-3 text-center font-mono text-[11px] text-slate-500">
+                        <div>
+                            <span class="block font-bold text-slate-800 text-xs">JWT Cookie Auth</span>
+                            <span>httpOnly Security</span>
+                        </div>
+                        <div>
+                            <span class="block font-bold text-slate-800 text-xs">Mongoose Schemas</span>
+                            <span>Strict Model Enforcers</span>
+                        </div>
+                        <div>
+                            <span class="block font-bold text-slate-800 text-xs">Server Logic</span>
+                            <span>Atomic Stock Rules</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- SECTION 2: FLOATING TASK UNIVERSE -->
+    <section id="floating-universe" class="py-16 px-4 md:px-8 max-w-7xl mx-auto relative min-h-[750px]">
+        <div id="universe-wrapper" class="transition-all duration-500">
+            
+            <div class="text-center max-w-2xl mx-auto mb-8">
+                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-700 font-mono text-xs mb-3">
+                    <i class="fa-solid fa-network-wired"></i>
+                    <span>Interactive Node Architecture Graph</span>
+                </div>
+                <h2 class="text-3xl font-heading font-bold text-slate-900">
+                    Floating Task Universe
+                </h2>
+                <p class="text-slate-500 text-sm mt-2">
+                    Click any floating task node to WHOOSH inside its complete component $\rightarrow$ API $\rightarrow$ controller $\rightarrow$ Mongoose model flow.
+                </p>
+
+                <!-- Filter Toggle Buttons -->
+                <div class="flex flex-wrap items-center justify-center gap-2 mt-6 font-mono text-xs">
+                    <button onclick="filterUniverse('all')" class="filter-btn active px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-all" data-filter="all">All Features</button>
+                    <button onclick="filterUniverse('core')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-cyan-400 transition-all" data-filter="core">Core E-commerce</button>
+                    <button onclick="filterUniverse('user')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-cyan-400 transition-all" data-filter="user">User & Auth</button>
+                    <button onclick="filterUniverse('admin')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-cyan-400 transition-all" data-filter="admin">Admin & Operations</button>
+                </div>
+            </div>
+
+            <!-- Visual Graph Container -->
+            <div class="relative w-full h-[580px] rounded-3xl bg-white/60 border border-slate-200/90 shadow-xl overflow-hidden p-6">
+                
+                <!-- SVG Network Connecting Lines -->
+                <svg id="universe-svg" class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.6" />
+                            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.2" />
+                        </linearGradient>
+                        <linearGradient id="violetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.6" />
+                            <stop offset="100%" stop-color="#c084fc" stop-opacity="0.2" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Curved Dynamic Connection Lines between Nodes & Core -->
+                    <path d="M 500 290 Q 280 140 220 120" stroke="url(#cyanGrad)" stroke-width="2" fill="none" class="pulse-path" />
+                    <path d="M 500 290 Q 720 140 780 120" stroke="url(#cyanGrad)" stroke-width="2" fill="none" class="pulse-path" />
+                    <path d="M 500 290 Q 200 290 180 290" stroke="url(#violetGrad)" stroke-width="2" fill="none" class="pulse-path" />
+                    <path d="M 500 290 Q 800 290 820 290" stroke="url(#cyanGrad)" stroke-width="2" fill="none" class="pulse-path" />
+                    <path d="M 500 290 Q 280 440 220 460" stroke="url(#violetGrad)" stroke-width="2" fill="none" class="pulse-path" />
+                    <path d="M 500 290 Q 720 440 780 460" stroke="url(#cyanGrad)" stroke-width="2" fill="none" class="pulse-path" />
+                    <path d="M 500 290 Q 500 480 500 500" stroke="url(#violetGrad)" stroke-width="2" fill="none" class="pulse-path" />
+                </svg>
+
+                <!-- Central Node: ATELIER DATA CORE -->
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                    <div class="w-44 h-44 rounded-full bg-gradient-to-tr from-cyan-500 via-teal-500 to-indigo-600 p-1 shadow-2xl animate-pulse">
+                        <div class="w-full h-full rounded-full bg-white flex flex-col items-center justify-center p-4 text-center">
+                            <i class="fa-solid fa-database text-3xl text-cyan-600 mb-1"></i>
+                            <span class="font-heading font-extrabold text-sm text-slate-900 leading-tight">ATELIER DATA CORE</span>
+                            <span class="font-mono text-[10px] text-emerald-600 font-semibold mt-1">MongoDB Atlas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLOATING NODE 1: Browse Products -->
+                <div class="node-item absolute left-[12%] top-[12%] z-30 animate-float-slow" data-category="core" onclick="openFeatureModal('browse-products')">
+                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-cyan-200/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="p-2 rounded-lg bg-cyan-50 text-cyan-600"><i class="fa-solid fa-boxes-stacked"></i></span>
+                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
+                        </div>
+                        <h3 class="font-heading font-bold text-sm text-slate-900">Browse Products</h3>
+                        <p class="text-[11px] text-slate-500 font-mono mt-1">GET /api/v1/products</p>
+                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                            <span>Assignee: Maliwan</span>
+                            <i class="fa-solid fa-chevron-right text-cyan-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLOATING NODE 2: Read Blog -->
+                <div class="node-item absolute right-[12%] top-[12%] z-30 animate-float-delayed" data-category="core" onclick="openFeatureModal('read-blog')">
+                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-cyan-200/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="p-2 rounded-lg bg-teal-50 text-teal-600"><i class="fa-solid fa-newspaper"></i></span>
+                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
+                        </div>
+                        <h3 class="font-heading font-bold text-sm text-slate-900">Read Blog</h3>
+                        <p class="text-[11px] text-slate-500 font-mono mt-1">GET /api/v1/blog</p>
+                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                            <span>Assignee: Jittrin</span>
+                            <i class="fa-solid fa-chevron-right text-cyan-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLOATING NODE 3: Authentication -->
+                <div class="node-item absolute left-[8%] top-[42%] z-30 animate-float-delayed" data-category="user" onclick="openFeatureModal('authentication')">
+                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-violet-200/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="p-2 rounded-lg bg-violet-50 text-violet-600"><i class="fa-solid fa-shield-halved"></i></span>
+                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
+                        </div>
+                        <h3 class="font-heading font-bold text-sm text-slate-900">Authentication</h3>
+                        <p class="text-[11px] text-slate-500 font-mono mt-1">POST /auth/login</p>
+                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                            <span>Assignee: Whittawat</span>
+                            <i class="fa-solid fa-chevron-right text-violet-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLOATING NODE 4: Cart Management -->
+                <div class="node-item absolute right-[8%] top-[42%] z-30 animate-float-slow" data-category="core" onclick="openFeatureModal('cart')">
+                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-cyan-200/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="p-2 rounded-lg bg-blue-50 text-blue-600"><i class="fa-solid fa-cart-shopping"></i></span>
+                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
+                        </div>
+                        <h3 class="font-heading font-bold text-sm text-slate-900">Cart Pipeline</h3>
+                        <p class="text-[11px] text-slate-500 font-mono mt-1">POST /api/v1/cart</p>
+                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                            <span>Assignee: Albert</span>
+                            <i class="fa-solid fa-chevron-right text-cyan-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLOATING NODE 5: Address Management -->
+                <div class="node-item absolute left-[12%] bottom-[10%] z-30 animate-float-slow" data-category="user" onclick="openFeatureModal('address')">
+                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-violet-200/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="p-2 rounded-lg bg-indigo-50 text-indigo-600"><i class="fa-solid fa-map-location-dot"></i></span>
+                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
+                        </div>
+                        <h3 class="font-heading font-bold text-sm text-slate-900">Customer Address</h3>
+                        <p class="text-[11px] text-slate-500 font-mono mt-1">PATCH /user/address</p>
+                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                            <span>Assignee: Poramet</span>
+                            <i class="fa-solid fa-chevron-right text-violet-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLOATING NODE 6: Checkout / Order -->
+                <div class="node-item absolute right-[12%] bottom-[10%] z-30 animate-float-delayed" data-category="core" onclick="openFeatureModal('checkout')">
+                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-cyan-200/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="p-2 rounded-lg bg-emerald-50 text-emerald-600"><i class="fa-solid fa-receipt"></i></span>
+                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
+                        </div>
+                        <h3 class="font-heading font-bold text-sm text-slate-900">Checkout & Orders</h3>
+                        <p class="text-[11px] text-slate-500 font-mono mt-1">POST /api/v1/orders</p>
+                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                            <span>Assignee: Maliwan</span>
+                            <i class="fa-solid fa-chevron-right text-cyan-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FLOATING NODE 7: Admin Operations -->
+                <div class="node-item absolute left-1/2 bottom-[4%] -translate-x-1/2 z-30 animate-float-slow" data-category="admin" onclick="openFeatureModal('admin')">
+                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-56 cursor-pointer border border-amber-200/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="p-2 rounded-lg bg-amber-50 text-amber-600"><i class="fa-solid fa-user-gear"></i></span>
+                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
+                        </div>
+                        <h3 class="font-heading font-bold text-sm text-slate-900">Admin Management</h3>
+                        <p class="text-[11px] text-slate-500 font-mono mt-1">authorize("admin")</p>
+                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
+                            <span>Assignee: Whittawat / Jittrin</span>
+                            <i class="fa-solid fa-chevron-right text-amber-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURE DETAIL GLASS MODAL (Zoom-in WHOOSH Destination) -->
+    <div id="feature-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
+        <div id="modal-container" class="glass-modal rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6 md:p-8 relative translate-y-8 transition-all duration-500">
+            
+            <!-- Modal Close Button -->
+            <button onclick="closeFeatureModal()" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Dynamic Modal Content Header -->
+            <div class="flex items-center space-x-3 mb-2">
+                <span id="modal-tag-type" class="px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-700 font-mono text-xs font-semibold">FEATURE PIPELINE</span>
+                <span id="modal-assignee" class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 font-mono text-xs">Assignee Name</span>
+            </div>
+            
+            <h2 id="modal-title" class="text-2xl md:text-3xl font-heading font-extrabold text-slate-900">Feature Name</h2>
+            <p id="modal-subtitle" class="text-sm text-slate-500 font-mono mt-1">Detailed Technical Data Pathway</p>
+
+            <!-- Multi-Layer Technical Flow Pipeline -->
+            <div class="mt-8 space-y-4">
+                <h3 class="text-xs font-mono font-bold text-slate-400 tracking-wider uppercase">End-to-End Execution Flow</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-3 text-left font-mono">
+                    <!-- Layer 1: Component -->
+                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
+                        <span class="text-[10px] text-cyan-600 font-bold block mb-1">01 FRONTEND</span>
+                        <span id="flow-component" class="text-xs font-semibold text-slate-800 block">ProductCard.jsx</span>
+                    </div>
+
+                    <!-- Layer 2: API Contract -->
+                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
+                        <span class="text-[10px] text-indigo-600 font-bold block mb-1">02 API ROUTE</span>
+                        <span id="flow-api" class="text-xs font-semibold text-slate-800 block">GET /products</span>
+                    </div>
+
+                    <!-- Layer 3: Handler/Controller -->
+                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
+                        <span class="text-[10px] text-violet-600 font-bold block mb-1">03 CONTROLLER</span>
+                        <span id="flow-handler" class="text-xs font-semibold text-slate-800 block">getProductsHandler</span>
+                    </div>
+
+                    <!-- Layer 4: Service Rules -->
+                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
+                        <span class="text-[10px] text-amber-600 font-bold block mb-1">04 SERVICE</span>
+                        <span id="flow-service" class="text-xs font-semibold text-slate-800 block">Stock & Filter</span>
+                    </div>
+
+                    <!-- Layer 5: Mongoose Model -->
+                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
+                        <span class="text-[10px] text-emerald-600 font-bold block mb-1">05 MONGOOSE</span>
+                        <span id="flow-model" class="text-xs font-semibold text-slate-800 block">Product.find()</span>
+                    </div>
+
+                    <!-- Layer 6: MongoDB Collection -->
+                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
+                        <span class="text-[10px] text-teal-600 font-bold block mb-1">06 DATABASE</span>
+                        <span id="flow-db" class="text-xs font-semibold text-slate-800 block">products</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deep Architectural Technical Details -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <div class="p-5 rounded-2xl bg-white/80 border border-slate-200/80">
+                    <h4 class="font-heading font-bold text-slate-900 text-sm mb-2 flex items-center space-x-2">
+                        <i class="fa-solid fa-code text-cyan-600"></i>
+                        <span>Business & Controller Logic</span>
+                    </h4>
+                    <p id="modal-logic-desc" class="text-xs text-slate-600 leading-relaxed font-sans">
+                        Detailed logic description will populate dynamically...
+                    </p>
+                </div>
+
+                <div class="p-5 rounded-2xl bg-white/80 border border-slate-200/80">
+                    <h4 class="font-heading font-bold text-slate-900 text-sm mb-2 flex items-center space-x-2">
+                        <i class="fa-solid fa-database text-emerald-600"></i>
+                        <span>MongoDB Model Schema & Integrity</span>
+                    </h4>
+                    <p id="modal-schema-desc" class="text-xs text-slate-600 leading-relaxed font-sans">
+                        Schema validation specs will populate dynamically...
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-slate-200/80 flex items-center justify-between font-mono text-xs text-slate-500">
+                <span>Press <kbd class="px-2 py-0.5 rounded bg-slate-200 text-slate-700">ESC</kbd> or click button to exit visualization</span>
+                <button onclick="closeFeatureModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-sans text-xs font-medium hover:bg-slate-800 transition-all">Close Pipeline</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: VISUAL BACKEND REQUEST ENGINE -->
+    <section id="backend-engine" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs mb-3">
+                <i class="fa-solid fa-microchip"></i>
+                <span>3D Request Execution Engine</span>
+            </div>
+            <h2 class="text-3xl font-heading font-bold text-slate-900">
+                Backend Request Engine
+            </h2>
+            <p class="text-slate-500 text-sm mt-2">
+                Simulating full request $\rightarrow$ response life-cycles across layered Express middleware, route handlers, Mongoose schemas, and MongoDB Atlas.
+            </p>
+        </div>
+
+        <!-- 3D Perspective Isometric Layers Container -->
+        <div class="perspective-container py-8">
+            <div class="tilted-engine-layer max-w-4xl mx-auto space-y-4">
+                
+                <!-- Layer 1: Client Request -->
+                <div class="glass-card p-4 rounded-xl border border-cyan-300/80 flex items-center justify-between shadow-lg">
+                    <div class="flex items-center space-x-3 font-mono text-xs">
+                        <span class="w-3 h-3 rounded-full bg-cyan-500"></span>
+                        <span class="font-bold text-slate-900">1. CLIENT REQUEST</span>
+                        <span class="text-slate-400">Fetch API / React Hook</span>
+                    </div>
+                    <span class="font-mono text-[11px] text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded">HTTP POST / GET</span>
+                </div>
+
+                <!-- Layer 2: Express Server & Middleware -->
+                <div class="glass-card p-4 rounded-xl border border-indigo-300/80 flex items-center justify-between shadow-lg ml-4">
+                    <div class="flex items-center space-x-3 font-mono text-xs">
+                        <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
+                        <span class="font-bold text-slate-900">2. EXPRESS MIDDLEWARE</span>
+                        <span class="text-slate-400">CORS • JSON Parser • authen.js</span>
+                    </div>
+                    <span class="font-mono text-[11px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">JWT Verification</span>
+                </div>
+
+                <!-- Layer 3: Router & Role Guard -->
+                <div class="glass-card p-4 rounded-xl border border-violet-300/80 flex items-center justify-between shadow-lg ml-8">
+                    <div class="flex items-center space-x-3 font-mono text-xs">
+                        <span class="w-3 h-3 rounded-full bg-violet-500"></span>
+                        <span class="font-bold text-slate-900">3. DOMAIN ROUTER</span>
+                        <span class="text-slate-400">/api/v1/*.routes.js • authorize("admin")</span>
+                    </div>
+                    <span class="font-mono text-[11px] text-violet-600 bg-violet-50 px-2 py-0.5 rounded">Role Guard</span>
+                </div>
+
+                <!-- Layer 4: Business Rules & Controller -->
+                <div class="glass-card p-4 rounded-xl border border-amber-300/80 flex items-center justify-between shadow-lg ml-12">
+                    <div class="flex items-center space-x-3 font-mono text-xs">
+                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                        <span class="font-bold text-slate-900">4. CONTROLLER / SERVICE</span>
+                        <span class="text-slate-400">Stock Re-read • Price Validation • Bcrypt</span>
+                    </div>
+                    <span class="font-mono text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded">Business Rules</span>
+                </div>
+
+                <!-- Layer 5: Mongoose Model & MongoDB -->
+                <div class="glass-card p-4 rounded-xl border border-emerald-300/80 flex items-center justify-between shadow-lg ml-16">
+                    <div class="flex items-center space-x-3 font-mono text-xs">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                        <span class="font-bold text-slate-900">5. MONGOOSE & MONGODB</span>
+                        <span class="text-slate-400">FlowerShop DB • BSON Queries</span>
+                    </div>
+                    <span class="font-mono text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Data Persistence</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: AUTHENTICATION & AUTHORIZATION FLOW -->
+    <section id="auth-flow" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-violet-50 border border-violet-200 text-violet-700 font-mono text-xs mb-3">
+                <i class="fa-solid fa-lock"></i>
+                <span>Security & Authorization Blueprint</span>
+            </div>
+            <h2 class="text-3xl font-heading font-bold text-slate-900">
+                JWT Cookie & Role-Based Authorization
+            </h2>
+            <p class="text-slate-500 text-sm mt-2">
+                Strict security contract isolating Customer and Admin privilege boundaries.
+            </p>
+        </div>
+
+        <div class="glass-card rounded-3xl p-8 border border-slate-200">
+            <div class="grid grid-cols-1 lg:grid-cols-7 gap-4 items-center font-mono text-xs text-center">
+                
+                <!-- Step 1 -->
+                <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-user-lock text-2xl text-slate-700 mb-2"></i>
+                    <span class="block font-bold">1. USER LOGIN</span>
+                    <span class="text-[10px] text-slate-400">POST /auth/login</span>
+                </div>
+
+                <div class="hidden lg:block text-slate-300"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <!-- Step 2 -->
+                <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-key text-2xl text-amber-500 mb-2"></i>
+                    <span class="block font-bold">2. BCRYPT CHECK</span>
+                    <span class="text-[10px] text-slate-400">Password Match</span>
+                </div>
+
+                <div class="hidden lg:block text-slate-300"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <!-- Step 3 -->
+                <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-cookie-bite text-2xl text-cyan-600 mb-2"></i>
+                    <span class="block font-bold">3. JWT COOKIE</span>
+                    <span class="text-[10px] text-slate-400">httpOnly Token</span>
+                </div>
+
+                <div class="hidden lg:block text-slate-300"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <!-- Step 4 -->
+                <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                    <i class="fa-solid fa-shield-halved text-2xl text-emerald-500 mb-2"></i>
+                    <span class="block font-bold">4. AUTHEN</span>
+                    <span class="text-[10px] text-slate-400">Sets req.user</span>
+                </div>
+
+            </div>
+
+            <!-- Branching Role Decision -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-8 border-t border-slate-100">
+                <!-- Customer Access -->
+                <div class="p-5 rounded-2xl bg-cyan-50/50 border border-cyan-200/80">
+                    <div class="flex items-center space-x-2 text-cyan-800 font-heading font-bold mb-2">
+                        <i class="fa-solid fa-user-check"></i>
+                        <span>ROLE: CUSTOMER</span>
+                    </div>
+                    <ul class="space-y-1.5 font-mono text-xs text-slate-600">
+                        <li>• Access Personal Cart & Address Book</li>
+                        <li>• Place Orders & View Order History</li>
+                        <li>• Access Profile Settings</li>
+                    </ul>
+                </div>
+
+                <!-- Admin Access -->
+                <div class="p-5 rounded-2xl bg-purple-50/50 border border-purple-200/80">
+                    <div class="flex items-center space-x-2 text-purple-800 font-heading font-bold mb-2">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>ROLE: ADMIN (`authorize("admin")`)</span>
+                    </div>
+                    <ul class="space-y-1.5 font-mono text-xs text-slate-600">
+                        <li>• Full Product Inventory Mutation (CRUD)</li>
+                        <li>• Modify Order Delivery Statuses</li>
+                        <li>• Edit Blog & System Content Articles</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: MONGODB SCHEMA RELATIONSHIPS -->
+    <section id="mongodb-schema" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700 font-mono text-xs mb-3">
+                <i class="fa-solid fa-sitemap"></i>
+                <span>Database Entity Mapping</span>
+            </div>
+            <h2 class="text-3xl font-heading font-bold text-slate-900">
+                MongoDB Relationship Graph
+            </h2>
+            <p class="text-slate-500 text-sm mt-2">
+                Document collections inside the <code class="font-mono text-slate-800">FlowerShop</code> database.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
+            <!-- Schema 1: users -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-bold text-slate-900">users</span>
+                    <i class="fa-solid fa-users text-cyan-600"></i>
+                </div>
+                <div class="text-[11px] text-slate-500 space-y-1">
+                    <p>• _id: ObjectId</p>
+                    <p>• email: String (unique)</p>
+                    <p>• password_hash: String</p>
+                    <p>• role: "admin" | "customer"</p>
+                    <p>• shipping_addresses: [Subdoc]</p>
+                </div>
+            </div>
+
+            <!-- Schema 2: products -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-bold text-slate-900">products</span>
+                    <i class="fa-solid fa-seedling text-emerald-600"></i>
+                </div>
+                <div class="text-[11px] text-slate-500 space-y-1">
+                    <p>• _id: ObjectId</p>
+                    <p>• name, base_price: Number</p>
+                    <p>• components: [{ inv_id, qty }]</p>
+                    <p>• is_active, is_popular: Boolean</p>
+                </div>
+            </div>
+
+            <!-- Schema 3: inventory_items -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-bold text-slate-900">inventory_items</span>
+                    <i class="fa-solid fa-boxes-packing text-amber-600"></i>
+                </div>
+                <div class="text-[11px] text-slate-500 space-y-1">
+                    <p>• _id: ObjectId</p>
+                    <p>• name: String</p>
+                    <p>• category: flower | vase</p>
+                    <p>• stock_quantity: Number</p>
+                </div>
+            </div>
+
+            <!-- Schema 4: carts -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-bold text-slate-900">carts</span>
+                    <i class="fa-solid fa-cart-flatbed text-blue-600"></i>
+                </div>
+                <div class="text-[11px] text-slate-500 space-y-1">
+                    <p>• user_id $\rightarrow$ Ref User</p>
+                    <p>• items: [{ product_id, qty }]</p>
+                    <p>• custom_specs: Object</p>
+                </div>
+            </div>
+
+            <!-- Schema 5: orders -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-bold text-slate-900">orders</span>
+                    <i class="fa-solid fa-file-invoice text-indigo-600"></i>
+                </div>
+                <div class="text-[11px] text-slate-500 space-y-1">
+                    <p>• user_id $\rightarrow$ Ref User</p>
+                    <p>• items_snapshot: Array</p>
+                    <p>• grand_total: Number</p>
+                    <p>• order_status: String</p>
+                </div>
+            </div>
+
+            <!-- Schema 6: blog -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-bold text-slate-900">blog</span>
+                    <i class="fa-solid fa-newspaper text-teal-600"></i>
+                </div>
+                <div class="text-[11px] text-slate-500 space-y-1">
+                    <p>• _id: String (shb01...)</p>
+                    <p>• title, content: String</p>
+                    <p>• category, status: String</p>
+                    <p>• published_at: Date</p>
+                </div>
+            </div>
+
+            <!-- Schema 7: reviews -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-bold text-slate-900">reviews</span>
+                    <i class="fa-solid fa-star text-yellow-500"></i>
+                </div>
+                <div class="text-[11px] text-slate-500 space-y-1">
+                    <p>• user_id $\rightarrow$ Ref User</p>
+                    <p>• product_id $\rightarrow$ Ref Product</p>
+                    <p>• rating: Number (1-5)</p>
+                </div>
+            </div>
+
+            <!-- Schema 8: custom_designs -->
+            <div class="glass-card p-5 rounded-2xl border border-slate-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-bold text-slate-900">custom_designs</span>
+                    <i class="fa-solid fa-wand-magic-sparkles text-violet-600"></i>
+                </div>
+                <div class="text-[11px] text-slate-500 space-y-1">
+                    <p>• user_id $\rightarrow$ Ref User</p>
+                    <p>• custom_components: Array</p>
+                    <p>• total_calculated_price</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: TEAM SPRINT TASK MATRIX -->
+    <section id="sprint-kanban" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-mono text-xs mb-3">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Team Execution Matrix</span>
+            </div>
+            <h2 class="text-3xl font-heading font-bold text-slate-900">
+                Sprint Deliverables Matrix
+            </h2>
+            <p class="text-slate-500 text-sm mt-2">
+                All Sprint 2 and Sprint 3 tasks fully resolved for Final Presentation.
+            </p>
+        </div>
+
+        <!-- Sprint Matrix Board -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 font-mono text-xs">
+            <!-- Team Member 1 -->
+            <div class="glass-card p-4 rounded-2xl border border-slate-200">
+                <div class="pb-3 border-b border-slate-200 mb-3">
+                    <span class="font-bold text-slate-900 block text-sm">Maliwan R.</span>
+                    <span class="text-[10px] text-slate-400">Frontend & API</span>
+                </div>
+                <div class="space-y-2 text-[11px]">
+                    <div class="p-2 rounded bg-white border border-slate-200">LandingPage / CustomerAccount</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">OrderList / OrderConfirmed</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">routes-product [search]</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">routes-blog [CRUD]</div>
+                </div>
+            </div>
+
+            <!-- Team Member 2 -->
+            <div class="glass-card p-4 rounded-2xl border border-slate-200">
+                <div class="pb-3 border-b border-slate-200 mb-3">
+                    <span class="font-bold text-slate-900 block text-sm">Poramet N.</span>
+                    <span class="text-[10px] text-slate-400">UI & Components</span>
+                </div>
+                <div class="space-y-2 text-[11px]">
+                    <div class="p-2 rounded bg-white border border-slate-200">Homepage / ProductEdit</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">CustomerAddress</div>
+                </div>
+            </div>
+
+            <!-- Team Member 3 -->
+            <div class="glass-card p-4 rounded-2xl border border-slate-200">
+                <div class="pb-3 border-b border-slate-200 mb-3">
+                    <span class="font-bold text-slate-900 block text-sm">Albert Phonbut</span>
+                    <span class="text-[10px] text-slate-400">Auth & Cart</span>
+                </div>
+                <div class="space-y-2 text-[11px]">
+                    <div class="p-2 rounded bg-white border border-slate-200">LoginPage / Cart Page</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">RenewPassword / ForgetPassword</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">models-address / routes-address</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">models-review / routes-review</div>
+                </div>
+            </div>
+
+            <!-- Team Member 4 -->
+            <div class="glass-card p-4 rounded-2xl border border-slate-200">
+                <div class="pb-3 border-b border-slate-200 mb-3">
+                    <span class="font-bold text-slate-900 block text-sm">Whittawat P.</span>
+                    <span class="text-[10px] text-slate-400">Auth & Components</span>
+                </div>
+                <div class="space-y-2 text-[11px]">
+                    <div class="p-2 rounded bg-white border border-slate-200">NavBar / Products Page</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">PurchasesItems / PopProducts</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">model-auth / authen middleware</div>
+                </div>
+            </div>
+
+            <!-- Team Member 5 -->
+            <div class="glass-card p-4 rounded-2xl border border-slate-200">
+                <div class="pb-3 border-b border-slate-200 mb-3">
+                    <span class="font-bold text-slate-900 block text-sm">Jittrin P.</span>
+                    <span class="text-[10px] text-slate-400">Dashboard & Cart Routes</span>
+                </div>
+                <div class="space-y-2 text-[11px]">
+                    <div class="p-2 rounded bg-white border border-slate-200">AdminDashboard / Overview</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">PopShopblog / Footer</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">models-carts / routes-carts</div>
+                    <div class="p-2 rounded bg-white border border-slate-200">models-custom-design</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 7: PROBLEM -> SOLUTION -> SYSTEM IMPACT -->
+    <section id="system-impact" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 font-mono text-xs mb-3">
+                <i class="fa-solid fa-wrench"></i>
+                <span>Engineering Resolutions</span>
+            </div>
+            <h2 class="text-3xl font-heading font-bold text-slate-900">
+                Problem $\rightarrow$ Solution $\rightarrow$ System Impact
+            </h2>
+            <p class="text-slate-500 text-sm mt-2">
+                Core technical bottlenecks solved during final system integration.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Card 1 -->
+            <div class="glass-card p-6 rounded-2xl border border-slate-200">
+                <div class="flex items-center space-x-2 font-mono text-xs text-rose-600 mb-2">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>PROBLEM 01: Client-side Identity Spoofing</span>
+                </div>
+                <h3 class="font-heading font-bold text-slate-900 mb-2">Unprotected User IDs in API Query Parameters</h3>
+                <p class="text-xs text-slate-600 mb-4">
+                    Early cart and address endpoints relied on client-supplied <code class="font-mono text-slate-800">user_id</code> strings, creating vulnerability to identity spoofing.
+                </p>
+                <div class="pt-3 border-t border-slate-100 flex items-start space-x-2 font-mono text-xs text-emerald-700">
+                    <i class="fa-solid fa-circle-check mt-0.5"></i>
+                    <span><strong>SOLUTION:</strong> Replaced with httpOnly JWT authentication where identity is verified via server-side <code class="text-slate-900">req.user._id</code>.</span>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="glass-card p-6 rounded-2xl border border-slate-200">
+                <div class="flex items-center space-x-2 font-mono text-xs text-rose-600 mb-2">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>PROBLEM 02: Price Manipulation Risk</span>
+                </div>
+                <h3 class="font-heading font-bold text-slate-900 mb-2">Client-side Order Total Calculation</h3>
+                <p class="text-xs text-slate-600 mb-4">
+                    Calculated checkout prices inside local React state allowed potential price manipulation before database save.
+                </p>
+                <div class="pt-3 border-t border-slate-100 flex items-start space-x-2 font-mono text-xs text-emerald-700">
+                    <i class="fa-solid fa-circle-check mt-0.5"></i>
+                    <span><strong>SOLUTION:</strong> Enforced backend cart re-read and server-side atomic price calculation before order creation.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t border-slate-200/80 bg-white/60 font-mono text-xs text-center text-slate-500">
+        <p>Atelier de Flora • Team McKraken Final Presentation System</p>
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        // Feature Data Store for WHOOSH Modal Pipelines
+        const featureData = {
+            'browse-products': {
+                title: 'Browse Products & Filter Pipeline',
+                assignee: 'Maliwan Rodsomrit',
+                type: 'CORE E-COMMERCE',
+                component: 'ProductsPage.jsx',
+                api: 'GET /api/v1/products',
+                handler: 'getProductsHandler',
+                service: 'Search & Tag Filter',
+                model: 'Product.find()',
+                db: 'products',
+                logic: 'Performs search indexing, tag filtering, and pagination. Filters active flower products and populates associated inventory references.',
+                schema: 'Requires base_price (Number), is_active (Boolean), and embedded components array referencing inventory_items ObjectIds.'
+            },
+            'read-blog': {
+                title: 'Shop Blog & Content Pipeline',
+                assignee: 'Jittrin Phuttawechmongkhon',
+                type: 'CORE E-COMMERCE',
+                component: 'ShopBlogPage.jsx',
+                api: 'GET /api/v1/blog',
+                handler: 'getBlogHandler',
+                service: 'Published Article Filter',
+                model: 'Blog.find({status: "published"})',
+                db: 'blog',
+                logic: 'Retrieves published editorial articles, sorts by published_at timestamp, and categorizes articles into popular vs general guide lists.',
+                schema: 'Uses custom String _id (e.g. shb01), title, content, cover_image URL, category enum, and boolean is_popular flag.'
+            },
+            'authentication': {
+                title: 'User Authentication & JWT Flow',
+                assignee: 'Whittawat Phirabhan',
+                type: 'SECURITY & USER',
+                component: 'LoginPage.jsx',
+                api: 'POST /api/v1/auth/login',
+                handler: 'loginHandler',
+                service: 'Bcrypt & JWT Signing',
+                model: 'User.findOne({email})',
+                db: 'users',
+                logic: 'Verifies email, performs bcrypt password hash comparison, generates JWT token, and attaches it as an httpOnly cookie.',
+                schema: 'Strict unique index on email, hashed password string, role ("customer" | "admin"), and embedded shipping_addresses subdocuments.'
+            },
+            'cart': {
+                title: 'Cart Sync & Custom Design Engine',
+                assignee: 'Albert Phonbut',
+                type: 'CORE E-COMMERCE',
+                component: 'CartPage.jsx',
+                api: 'POST /api/v1/cart',
+                handler: 'syncCartHandler',
+                service: 'Duplicate & Stock Check',
+                model: 'Cart.findOneAndUpdate()',
+                db: 'carts',
+                logic: 'Handles standard product additions and custom bouquet specifications. Validates item quantity against inventory limits.',
+                schema: 'Enforces unique user_id index (1 cart per user), items array with product_id ref, and max 200-character gift_note string.'
+            },
+            'address': {
+                title: 'Customer Shipping Address Book',
+                assignee: 'Poramet N.',
+                type: 'USER MANAGEMENT',
+                component: 'CustomerAddress.jsx',
+                api: 'PATCH /api/v1/user/address',
+                handler: 'updateAddressHandler',
+                service: 'Default Address Rule',
+                model: 'User.findByIdAndUpdate()',
+                db: 'users',
+                logic: 'Manages embedded shipping addresses in user profile. Automatically toggles existing defaults to false when a new default is designated.',
+                schema: 'Embedded subdocument array inside User model containing recipient_name, address_line, phone_number, and is_default boolean.'
+            },
+            'checkout': {
+                title: 'Checkout & Atomic Order Creation',
+                assignee: 'Maliwan Rodsomrit',
+                type: 'CORE E-COMMERCE',
+                component: 'CheckoutPage.jsx',
+                api: 'POST /api/v1/orders',
+                handler: 'createOrderHandler',
+                service: 'Re-read Cart & Stock Deduct',
+                model: 'Order.create()',
+                db: 'orders',
+                logic: 'Re-reads cart server-side, validates stock availability, calculates total fees, generates an immutable snapshot, and clears cart.',
+                schema: 'Stores snapshot of purchased products, unit prices, shipping_address copy, order_status, and grand_total.'
+            },
+            'admin': {
+                title: 'Admin Management & Role Guard',
+                assignee: 'Whittawat / Jittrin',
+                type: 'ADMIN & OPERATIONS',
+                component: 'AdminDashboard.jsx',
+                api: 'PATCH /api/v1/products/:id',
+                handler: 'adminMutationHandler',
+                service: 'authorize("admin") Guard',
+                model: 'Product.findByIdAndUpdate()',
+                db: 'products',
+                logic: 'Guards admin actions using authorize("admin") middleware. Enables CRUD mutations over product listings, stock counts, and order statuses.',
+                schema: 'Validates admin role before mutating catalog products, inventory stock levels, or order status state transitions.'
+            }
+        };
+
+        // Open Modal with Depth WHOOSH Effect
+        function openFeatureModal(featureKey) {
+            const data = featureData[featureKey];
+            if (!data) return;
+
+            // Populate Modal Content
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-assignee').innerText = 'Assignee: ' + data.assignee;
+            document.getElementById('modal-tag-type').innerText = data.type;
+            
+            document.getElementById('flow-component').innerText = data.component;
+            document.getElementById('flow-api').innerText = data.api;
+            document.getElementById('flow-handler').innerText = data.handler;
+            document.getElementById('flow-service').innerText = data.service;
+            document.getElementById('flow-model').innerText = data.model;
+            document.getElementById('flow-db').innerText = data.db;
+
+            document.getElementById('modal-logic-desc').innerText = data.logic;
+            document.getElementById('modal-schema-desc').innerText = data.schema;
+
+            // Apply WHOOSH depth animation to background universe
+            const universe = document.getElementById('universe-wrapper');
+            universe.classList.add('universe-zoom-out');
+
+            // Display modal
+            const modal = document.getElementById('feature-modal');
+            const container = document.getElementById('modal-container');
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            container.classList.remove('translate-y-8');
+            container.classList.add('translate-y-0');
+        }
+
+        // Close Modal
+        function closeFeatureModal() {
+            const universe = document.getElementById('universe-wrapper');
+            universe.classList.remove('universe-zoom-out');
+
+            const modal = document.getElementById('feature-modal');
+            const container = document.getElementById('modal-container');
+
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            container.classList.add('translate-y-8');
+            container.classList.remove('translate-y-0');
+        }
+
+        // Universe Filter Toggle
+        function filterUniverse(category) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('data-filter') === category) {
+                    btn.classList.add('bg-slate-900', 'text-white');
+                    btn.classList.remove('bg-white', 'text-slate-600');
+                } else {
+                    btn.classList.remove('bg-slate-900', 'text-white');
+                    btn.classList.add('bg-white', 'text-slate-600');
+                }
+            });
+
+            const nodes = document.querySelectorAll('.node-item');
+            nodes.forEach(node => {
+                const nodeCat = node.getAttribute('data-category');
+                if (category === 'all' || nodeCat === category) {
+                    node.style.opacity = '1';
+                    node.style.pointerEvents = 'auto';
+                } else {
+                    node.style.opacity = '0.2';
+                    node.style.pointerEvents = 'none';
+                }
+            });
+        }
+
+        // Keyboard Shortcut Navigation Support
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeFeatureModal();
+            }
+        });
+    </script>
+</body>
+</html>
