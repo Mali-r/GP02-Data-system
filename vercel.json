@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/atelier_de_flora_3d_visual_data_system_presentation.html"
+    }
+  ]
+}
