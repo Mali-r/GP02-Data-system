@@ -1,0 +1,256 @@
+# Presentation Plan — Atelier de Flora (Team McKraken, GP02)
+
+> แผนงานสำหรับทำ README (frontend / backend) และ presentation HTML สำหรับ JSD#13 Final Project
+> ทุกคนในทีมช่วยเติมเนื้อหาส่วนของตัวเองได้ ช่องที่มี **`TODO`** = รอข้อมูล / รอคนรับผิดชอบ
+> อัปเดตล่าสุด: 2026-09-24
+
+---
+
+## 1. งานที่ต้องทำ (3 ชิ้น)
+
+| # | ชิ้นงาน | อยู่ที่ repo | branch | สถานะ |
+|---|---|---|---|---|
+| 1 | `README.md` frontend — โปรเจกต์คืออะไร, feature, tech stack, โครงสร้าง, วิธีรัน | `JittrinP/JSD13_Group_Project2_McKraken_sprint2` | `presentation` | ✅ เขียนเสร็จ รอ commit + push + ทีมตรวจ |
+| 2 | `README.md` backend — API routes, models, auth, env, วิธีรัน, AI chatbot | `JittrinP/McKraken_sprint3_Backend` | `presentation` | ✅ เขียนเสร็จ รอ commit (พร้อม `doc/ER Diagram-flower-shop_edited.png`) + push + ทีมตรวจ |
+| 3 | Presentation HTML (ต่อจากไฟล์ของ Mali) | `Mali-r/GP02-Data-system` (repo นี้) | `presentation` | ⏳ ต่อไป |
+
+ลำดับ: **README ก่อน** (รวบรวมข้อมูลให้ครบ + ทีมเข้าใจตรงกัน) → presentation ดึงเนื้อหาจาก README ไปทำเป็นสไลด์
+
+### ข้อมูลจาก README ที่ใช้ทำสไลด์ได้เลย
+| สไลด์ | ดึงจาก |
+|---|---|
+| 02 Feature | frontend README → ตาราง Feature ลูกค้า / แอดมิน + "สถานะการต่อ API" |
+| 03 Tech stack | ตาราง Tech stack ของทั้ง 2 README |
+| 04 Data route | backend README → ตาราง API, Data model, Design rules, การคิดราคา |
+| 05 Auth | backend README → diagram Authentication |
+| 07 Problem & Solution | backend README → Known issues (ใช้เป็นหัวข้อ "สิ่งที่จะทำต่อ" ได้) |
+
+### Known issues ที่เจอตอนเขียน README (ควรแจ้งทีม — กระทบ demo)
+- **Refresh token บน production ใช้ไม่ได้** — cookie `refreshToken` ตั้ง `sameSite: "strict"` → ข้ามโดเมน Vercel → Render ไม่ได้ → ผู้ใช้หลุด login หลัง 15 นาที (ของวิทวัส — ต้องถามก่อนแก้) ⚠️ ถ้า live demo บนเว็บจริง ให้ login ใหม่ก่อนเริ่ม demo
+- Order API ยังไม่มี route (Purchases / OrderList ยังใช้ข้อมูลในเครื่อง)
+- `/payments/create-intent` รับ `amount` จาก frontend + ไม่ต้อง login
+- Blog POST / PATCH / DELETE ยังไม่มี auth
+- frontend ยังไม่มี route guard หน้า dashboard (แต่ backend ตรวจสิทธิ์ทุก API แล้ว)
+
+---
+
+## 2. โครงสร้างเวลาของคลาส (35 นาที / กลุ่ม)
+
+McKraken = **กลุ่ม #2 เวลา 14:00–14:35** (จาก `time and presentation structure.png`)
+
+| ส่วนของคลาส | เวลา | หัวข้อของเรา |
+|---|---|---|
+| Introduction of group members | 5 นาที | 00 |
+| 1) Project Concept — ทำไมเลือกขายสินค้านี้ | 20 นาที (รวม) | 01 |
+| 2) Demo & Product features — highlight features | | 02 (+ live demo) |
+| 3) Working Process — tech stack, authentication, เก็บข้อมูล, problem & solution | | 03, 04, 05, 06, 07 |
+| 4) BSM ที่ใช้ในการทำโปรเจกต์ | | 08 |
+| Feedback / Q&A | 10 นาที | — |
+
+### เวลาที่แนะนำต่อหัวข้อ (20 นาทีของ project) — `TODO` ทีมปรับได้
+
+| # | หัวข้อ | นาที | ผู้พูด |
+|---|---|---|---|
+| 00 | Introduction group members | 5 (แยก) | ทุกคน ~1 นาที/คน |
+| 01 | Overview & Concept | 2 | `TODO` |
+| 02 | Feature + **Live Demo** (Custom design, AI chatbot) | 6 | `TODO` |
+| 03 | Tech stack | 2 | `TODO` |
+| 04 | Data route (ER diagram + API) | 2.5 | `TODO` |
+| 05 | Auth explanation | 2 | `TODO` (น่าจะวิทวัส — ทำ auth) |
+| 06 | Working Process (Sprint / Miro / Git) | 2 | `TODO` |
+| 07 | Problem & Solution | 2.5 | `TODO` |
+| 08 | BSM | 1 | `TODO` |
+
+---
+
+## 3. ทีม (จาก Miro Sprint 2–3) — `TODO` ทุกคนเช็คชื่อ/บทบาท/รูป
+
+| สมาชิก | งานหลัก (จาก kanban) |
+|---|---|
+| **Jittrin P. (base)** | Cart (model/routes/frontend), Custom design (model/routes/frontend, preset 1–5), **AI chatbot (RAG)**, Admin Overview, Footer, PopShopBlog, ShopBlog page |
+| **Albert Phonbut** | Login / Register / ForgetPassword / RenewPassword (UI), Address (model/routes/frontend), Review, **Stripe PromptPay payment**, Blog model, Admin order (`TODO` สถานะ), AsideAdmin, Cart page UI |
+| **Maliwan Rodsomrit** | Landing page, Customer dashboard (Account, Aside), Checkout, OrderConfirmed, OrderList, Blog CRUD, Product model + search, ContentEdit, ShopBlog/Products page API, **presentation HTML เวอร์ชันแรก** |
+| **วิทวัส ภิระบรรณ์** | NavBar, Products page, PopProducts, PurchasesItems, ContentEdit (S2), **Auth backend + frontend** (login/register/logout/forget/reset/edit password), Product CRUD |
+| **Poramet N.** | Homepage, CustomerAddress, ProductEdit (admin), Inventory items, Order model/routes, Custom product frontend (3D model) |
+
+> ต้องการจากแต่ละคน: ชื่อที่จะแสดง, บทบาทสั้นๆ 1 บรรทัด, รูป (หรือใช้ตัวอักษรย่อแทน), feature ที่ภูมิใจที่สุด 1 อย่าง
+
+---
+
+## 4. เนื้อหาแต่ละหัวข้อ (สำหรับ presentation)
+
+แต่ละหัวข้อ: **เป้าหมาย** / เนื้อหาหลัก / ภาพประกอบ / แหล่งข้อมูล / ใช้อะไรจากไฟล์ของ Mali ได้
+
+### 00 · Introduction group members
+- การ์ดสมาชิก 5 คน: รูป, ชื่อ, บทบาท, feature หลัก
+- ชื่อทีม McKraken + ชื่อร้าน **Atelier de Flora**
+- จากไฟล์ Mali: ส่วน `#hero` (ชื่อโปรเจกต์) ปรับสไตล์ใหม่
+
+### 01 · Overview & Concept
+- ร้านดอกไม้ออนไลน์: ซื้อช่อสำเร็จรูป + **ออกแบบช่อเอง (custom)** + AI ช่วยแนะนำ
+- **ทำไมเลือกขายดอกไม้** (คลาสถามข้อนี้ตรงๆ) — `TODO` ทีมช่วยกันเขียน 2–3 เหตุผล
+  - แนวคิดตั้งต้น: ของขวัญที่ต้องการความเป็นส่วนตัว (custom), เลือกยากถ้าไม่รู้เรื่องดอกไม้ (AI ช่วย), มีหลายโอกาส (วันแม่, วาเลนไทน์, รับปริญญา)
+- กลุ่มผู้ใช้: ลูกค้า (customer) / แอดมิน (admin)
+- ลิงก์เว็บจริง: Vercel `https://jsd-13-group-project2-mc-kraken-spr.vercel.app`
+
+### 02 · Feature + Live Demo
+**Feature ทั้งหมด (สรุปสั้น):**
+- ลูกค้า: สมัคร/login/ลืมรหัสผ่าน, ดูสินค้า + search/filter, ตะกร้า + gift note, checkout + จ่าย PromptPay (Stripe), customer dashboard (บัญชี, ที่อยู่, ช่อที่เซฟ, ประวัติสั่งซื้อ), Shop blog, รีวิว
+- แอดมิน: Overview, จัดการสินค้า/วัตถุดิบ (CRUD), รายการ order, จัดการ content, **ปุ่ม Sync AI**
+
+**Highlight (ใช้ demo จริง):**
+1. **Custom design** — เลือก base + ดอกไม้ 3 ชนิด + จำนวน, preview 3D, เซฟเป็น preset 1–5, แก้ไขจาก dashboard, ใส่ตะกร้า (ราคา = วัตถุดิบ + service fee ฿100)
+2. **AI chatbot "Ask AI"** — ถามสินค้า/ราคา, **"ช่วยจัดช่อ custom ให้แม่ งบ 800"**, ถามตะกร้า/ช่อที่เซฟของตัวเอง, ถามต่อเนื่องได้
+
+**Demo script** (`TODO` ซ้อมจับเวลา ~4 นาที):
+1. login → หน้า Home → custom ช่อ → Save preset → Add to cart
+2. เปิด Ask AI → กดคำถามตัวอย่าง "ช่วยจัดช่อ custom ให้แม่ งบ 800" → ชี้วิธีคิดราคา
+3. ถาม "ตะกร้าของฉันรวมเท่าไหร่" → เทียบกับหน้า Cart
+4. Cart → Checkout → QR PromptPay (test mode)
+- ⚠️ แผนสำรอง: อัดวิดีโอ demo ไว้ก่อน (Render free tier หลับ / Gemini quota หมด / เน็ตล่ม)
+- ⚠️ อย่าเทส AI รัวๆ วันพรีเซนต์ — quota รายวันของ Gemini reset 14:00 น. (ตรงกับเวลาพรีเซนต์พอดี)
+- จากไฟล์ Mali: ส่วน `#floating-universe` (Browse Products, Read Blog, Cart Pipeline, Checkout & Orders, Admin Management) ใช้เป็นภาพรวม feature ได้
+
+### 03 · Tech stack
+| ชั้น | เทคโนโลยี |
+|---|---|
+| Frontend | React 19, Vite, Tailwind CSS v4, shadcn/ui, React Router v7, axios, react-hook-form + zod, recharts, `@google/model-viewer` (3D) |
+| Backend | Node.js, Express 5, Mongoose 9, JWT (`jsonwebtoken`) + `cookie-parser`, bcrypt |
+| Database | MongoDB Atlas (DB `FlowerShop`) + **Atlas Vector Search** |
+| Payment | Stripe (PromptPay QR) |
+| AI | Google Gemini (`gemini-embedding-001`, `gemini-3.5-flash` / `flash-lite`) |
+| Deploy | Vercel (frontend) + Render (backend) |
+| Tools | Git/GitHub (branch → PR → merge), Miro (sprint kanban), Figma (design), Claude Code |
+- ภาพ: diagram 3 กล่อง Browser (Vercel) → API (Render) → MongoDB Atlas / Stripe / Gemini
+- จากไฟล์ Mali: ส่วน `#backend-engine`
+
+### 04 · Data route
+- **ER diagram** (`ER Diagram-flower-shop_edited.png`) + design rules:
+  ทุกอย่างที่ขาย = product / order = snapshot ราคา / ช่อ custom เก็บใน `custom_specs` ไม่สร้าง product ใหม่ / inventory = ใช้ภายในร้าน
+- Collections: users (ฝัง shipping_addresses, saved_custom_designs), products, inventory_items, carts, orders, blog, reviews, ai_knowledge
+- API หลัก (`/api/v1`): `/auth`, `/products`, `/cart`, `/custom-design`, `/user/address`, `/payments`, `/blog`, `/review`, `/ai`
+- Flow ตัวอย่าง: **Add to cart → GET /cart (backend คิดราคา) → Checkout → Stripe → Order**
+- จากไฟล์ Mali: ส่วน `#mongodb-schema`
+
+### 05 · Auth explanation
+- Register → hash password (bcrypt) → Login → backend สร้าง **accessToken (15 นาที)** + **refreshToken (7 วัน)** เก็บใน **httpOnly cookie** (JavaScript อ่านไม่ได้ กัน XSS)
+- ทุก request ส่ง cookie อัตโนมัติ (`withCredentials`) → middleware `authen` ตรวจ token → `authorize(["admin"])` แยกสิทธิ์
+- accessToken หมดอายุ → axios interceptor ยิง `/auth/refresh` ให้เอง → ผู้ใช้ไม่ต้อง login ใหม่
+- เปิดเว็บ → `GET /auth/me` เช็คว่ายัง login อยู่ไหม
+- userId มาจาก token เสมอ ไม่รับจาก URL/body (เช่น cart, custom design, AI ดูได้แค่ของตัวเอง)
+- `TODO` วิทวัสเช็ค/เติม: forget/reset password flow
+- จากไฟล์ Mali: ส่วน `#auth-flow`
+
+### 06 · Working Process
+- Sprint 1–3 บน **Miro kanban** (Backlog → ToDo → In Progress → Code Review → Testing → Done) แต่ละการ์ดมี assignee + วันที่
+  - Sprint 2: UI / pages / components (mock data)
+  - Sprint 3: models + routes + ต่อ API จริง + payment + AI chatbot
+- Git flow: แยก branch ต่อ feature → PR → review → merge เข้า main (frontend PR #1–#73+, backend PR #1–#27+)
+- การคุย/แบ่งงาน: `TODO` ประชุมบ่อยแค่ไหน, ช่องทาง (Discord/Line?), daily stand-up?
+- Figma → ออกแบบ UI + design system ก่อนเขียนโค้ด
+- จากไฟล์ Mali: ส่วน `#sprint-kanban`
+
+### 07 · Problem & Solution
+เลือก 4–5 ข้อที่เล่าได้ดี (`TODO` แต่ละคนเสนอปัญหาของส่วนตัวเองอย่างน้อย 1 ข้อ)
+
+| ปัญหา | ทางแก้ | ของใคร |
+|---|---|---|
+| ราคาในหน้าเว็บคิดที่ frontend → ปลอมราคาได้ / ไม่ตรงกัน | ให้ backend คิดราคา (`utils/pricing.js`) GET /cart ส่งยอดมาให้ + order เก็บ snapshot | base |
+| ส่ง userId ใน URL → แก้ URL ดูข้อมูลคนอื่นได้ | เอา userId จาก JWT (`req.user.userId`) แทน | ทีม |
+| หน่วยราคาไม่ตรงกัน ($ / THB) | เปลี่ยนเป็น ฿ ทั้งเว็บ (PR #73) | base |
+| token หมดอายุ 15 นาทีแล้ว request ที่ใช้ `fetch` พัง | ใช้ axios instance ที่มี interceptor refresh token | ทีม |
+| seed ใหม่ `_id` เปลี่ยน → id ที่ hardcode / AI หาสินค้าไม่เจอ | ดึงจาก API แทน hardcode + ปุ่ม Sync AI | base / Poramet |
+| AI (flash-lite) จัดช่อเกินงบ / คิดเลขผิด | ให้แสดงวิธีคิด + ใช้ model ใหญ่เฉพาะคำถามจัดช่อ + fallback | base |
+| ข้อมูลส่วนตัวรั่วผ่าน AI | ไม่ embed ข้อมูลส่วนตัว ดึงสดตาม token เท่านั้น (ทดสอบ prompt injection แล้ว) | base |
+| merge conflict ตอนหลายคนแก้ไฟล์กลาง (Layout, routes/index) | แยก component + แก้ไฟล์กลางให้น้อยที่สุด + แจ้งใน PR | ทีม |
+- จากไฟล์ Mali: ส่วน `#system-impact` (มี "Unprotected User IDs in API Query Parameters", "Client-side Order Total Calculation" อยู่แล้ว)
+
+### 08 · BSM (Behavior, Skill, Mindset)
+อ้างอิง `doc/BSM.png` — ให้แต่ละคนเลือก **1 ตัวอย่างจริง** จากโปรเจกต์ (`TODO` ทุกคน)
+
+| หมวด | หัวข้อจากคลาส | ตัวอย่างจากโปรเจกต์ (เติม) |
+|---|---|---|
+| Mindsets | Growth Mindset, Persistence, Personal Responsibility, Future Orientation | เช่น เรียน RAG/vector search ใหม่แล้วนำมาใช้จริง |
+| Behavioral skills | Proactiveness, Time Management, Teamwork, Orientation to details, Communication | เช่น แจ้งในทีมก่อนแก้ไฟล์ของเพื่อน, ใช้ Miro จัด sprint |
+| Technical skills | JS, React, Node/Express/MongoDB, Final Project, AI Session | เชื่อมกับ tech stack หัวข้อ 03 |
+
+---
+
+## 5. Design system (ตาม Figma = ตรงกับ `index.css` ของ frontend)
+
+| Token | ค่า | ใช้กับ |
+|---|---|---|
+| primary | `#586158` | หัวข้อ, ปุ่ม, เส้นเน้น |
+| secondary | `#F9F6F0` | พื้นหลังการ์ด |
+| accent / tertiary | `#F3F3F0` | พื้นหลัง section สลับ |
+| neutral | `#4A4A4A` | ตัวอักษรหลัก |
+| background | `#FBF9F8` | พื้นหลังหน้า |
+| destructive | `#8F4748` | ปัญหา / คำเตือน (หัวข้อ 07) |
+| border | `#929B91` (30%) | เส้นขอบการ์ด |
+
+- ฟอนต์: **Literata** (serif) = หัวข้อ / **Plus Jakarta Sans** = เนื้อหา (Google Fonts)
+- สไตล์: เรียบ นุ่ม โทนเขียวหม่น-ครีม แบบร้านดอกไม้ (ไม่ใช้สีนีออน/tech ของเวอร์ชันเดิม)
+- ภาพประกอบ: screenshot จากเว็บจริง, ER diagram, `BSM.png`, รูปดอกไม้ในโปรเจกต์ (`src/assets`)
+
+---
+
+## 6. แผนทำ presentation HTML (ต่อจากไฟล์ของ Mali)
+
+- แก้ต่อใน `atelier_de_flora_3d_visual_data_system_presentation.html` บน branch `presentation` (Mali อนุญาตแล้ว)
+- เปลี่ยนธีม: Inter / Space Grotesk / cyan-violet → Literata + Plus Jakarta Sans / palette ข้อ 5
+- จัด section ใหม่ตามลำดับ 00–08 (ย้าย section เดิมไปอยู่หัวข้อที่ตรงกัน ดูตารางด้านล่าง) + เพิ่ม 00 ทีม, 02 highlight AI, 08 BSM
+- มี nav ด้านบน / ปุ่มเลื่อนหัวข้อ, ใช้ได้บนจอโปรเจกเตอร์ (16:9) และมือถือ
+- deploy ผ่าน Vercel ของ repo นี้ (มี `vercel.json` แล้ว)
+
+| section เดิมของ Mali | ย้ายไปหัวข้อ |
+|---|---|
+| `#hero` | 00 / 01 |
+| `#floating-universe` | 02 |
+| `#backend-engine` | 03 |
+| `#mongodb-schema` | 04 |
+| `#auth-flow` | 05 |
+| `#sprint-kanban` | 06 |
+| `#system-impact` | 07 |
+| (ใหม่) | 00 ทีม, 02 AI + custom highlight, 08 BSM |
+
+---
+
+## 7. โครงร่าง README — ✅ ทำครบแล้ว (2026-09-24)
+
+> ยังไม่ได้ใส่: screenshot หน้าเว็บใน frontend README (ข้อ 1) — เพิ่มทีหลังได้ตอนถ่ายภาพทำสไลด์
+
+### Frontend (`Mckraken-sprint2/README.md`)
+1. Atelier de Flora คืออะไร + ลิงก์เว็บ + screenshot
+2. Feature (ลูกค้า / แอดมิน / custom design / AI chatbot)
+3. Tech stack
+4. โครงสร้างโฟลเดอร์ (`pages/`, `components/`, `context/` (Auth, Cart), `lib/` (API helpers))
+5. วิธีรัน (`npm install`, `.env` → `VITE_API_URL`, `npm run dev`)
+6. Design system (สี/ฟอนต์)
+7. ทีม + ใครทำส่วนไหน
+8. ลิงก์ backend repo
+
+### Backend (`McKraken_sprint3_Backend/README.md`)
+1. ภาพรวม + ลิงก์ Render
+2. Tech stack
+3. โครงสร้างโฟลเดอร์ (`models/`, `routes/v1/`, `controllers/`, `middleware/`, `services/`, `utils/`, `scripts/`, `seed/`)
+4. ตาราง API ทั้งหมด (method, path, สิทธิ์, คำอธิบาย)
+5. Data model / ER + design rules
+6. Auth flow
+7. AI chatbot (สรุป + ลิงก์ `AI_CHATBOT_PLAN.md`)
+8. Environment variables (ชื่อเท่านั้น ห้ามใส่ค่า)
+9. วิธีรัน + seed + sync AI
+10. ทีม
+
+---
+
+## 8. คำถามที่ยังค้าง (ถามทีม)
+
+1. ใครพูดหัวข้อไหน (ตารางข้อ 2)
+2. ชื่อ/บทบาท/รูปของแต่ละคน (ข้อ 3) และ Albert: admin order ทำถึงไหน
+3. เหตุผล "ทำไมเลือกขายดอกไม้" (ข้อ 01)
+4. ปัญหาของแต่ละคน + ตัวอย่าง BSM (ข้อ 07, 08)
+5. ช่องทางสื่อสารของทีม / ประชุมบ่อยแค่ไหน (ข้อ 06)
+6. Live demo ใช้เว็บจริงบน Vercel หรือ localhost (+ อัดวิดีโอสำรอง)
+7. Order API (สร้าง order จริงใน DB) จะเสร็จทันพรีเซนต์ไหม — กระทบ demo checkout
+8. วิทวัส: แก้ `sameSite` ของ refresh token เป็น `"none"` ทันพรีเซนต์ไหม (ดู Known issues ข้อ 1)
+9. ทุกคนช่วยอ่าน README ทั้ง 2 repo ว่าส่วนของตัวเองถูกต้องไหม (ตารางทีม, feature, API)
