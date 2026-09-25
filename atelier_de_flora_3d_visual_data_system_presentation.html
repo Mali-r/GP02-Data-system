@@ -285,12 +285,33 @@ body.scroll .title-art { max-height: 520px; }
 .rules { display: grid; gap: 0.55em; }
 .rules div { display: grid; grid-template-columns: 1.8em 1fr; gap: 0.5em; font-size: 0.9em; }
 .rules div b:first-child { font-family: var(--font-display); color: var(--primary); font-size: 1.2em; line-height: 1.2; }
-.api-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6em; }
+.api-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6em; }
 @media (max-width: 900px) { .api-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 520px) { .api-list { grid-template-columns: 1fr; } }
-.api-list .card { padding: 0.8em 1em; }
-.api-list .path { font-family: var(--font-mono); font-size: 0.9em; color: var(--primary-dark); font-weight: 600; }
+.api-list .card { padding: 0.8em 1em; font: inherit; color: inherit; text-align: left; width: 100%; cursor: pointer; transition: transform .2s ease, border-color .2s ease; }
+.api-list .card:hover, .api-list .card:focus-visible { transform: translateY(-2px); border-color: var(--primary); outline: none; }
+.api-list .path { font-family: var(--font-mono); font-size: 0.9em; color: var(--primary-dark); font-weight: 600; display: flex; justify-content: space-between; gap: 0.5em; }
+.api-list .path small { font-family: var(--font-body); font-weight: 500; color: var(--muted); }
 .api-list p { font-size: 0.8em; color: var(--muted); margin-top: 0.2em; }
+.api-list .all { background: var(--primary); border-color: var(--primary); }
+.api-list .all .path, .api-list .all p, .api-list .all small { color: var(--secondary); }
+
+/* popup รายการ API */
+.api-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin: 1em 0; }
+.api-tabs button { font: 500 12.5px var(--font-body); padding: 5px 11px; border-radius: 99px; border: 1px solid var(--border-strong); background: var(--card); color: var(--primary-dark); cursor: pointer; }
+.api-tabs button.on { background: var(--primary); color: var(--secondary); border-color: var(--primary); }
+.api-group + .api-group { margin-top: 1.1em; }
+.api-group h3 { font-size: 1.05em; display: flex; align-items: baseline; gap: 0.5em; margin-bottom: 0.4em; }
+.api-group h3 code { font-size: 0.8em; }
+.api-row { display: grid; grid-template-columns: 4.6em minmax(9em, 15em) 1.6em 1fr; gap: 0.6em; align-items: baseline; padding: 0.45em 0.2em; border-top: 1px solid var(--border); font-size: 14px; }
+.api-row .m { font-family: var(--font-mono); font-size: 11px; font-weight: 600; text-align: center; padding: 2px 0; border-radius: 6px; background: var(--primary-soft); color: var(--primary-dark); }
+.api-row .m.post { background: #e5efe0; color: #3d5a2f; }
+.api-row .m.put, .api-row .m.patch { background: #f6ecd7; color: #7a5a18; }
+.api-row .m.delete { background: var(--destructive-soft); color: var(--destructive); }
+.api-row .p { font-family: var(--font-mono); font-size: 12.5px; color: var(--primary-dark); word-break: break-all; }
+.api-row .d { color: var(--neutral); }
+.api-row .warn { display: inline-block; margin-left: 6px; font-size: 11px; color: var(--destructive); background: var(--destructive-soft); border-radius: 6px; padding: 0 6px; }
+@media (max-width: 640px) { .api-row { grid-template-columns: 4.2em 1fr 1.6em; } .api-row .d { grid-column: 1 / -1; } }
 .legend { display: flex; gap: 1em; flex-wrap: wrap; font-size: 0.8em; color: var(--muted); margin-bottom: 0.8em; }
 
 /* ===== Problem ===== */
@@ -706,18 +727,9 @@ body.scroll .progress { display: none; }
       <div class="eyebrow"><span class="num">04</span> Data Route</div>
       <h2>REST API <span class="mono muted" style="font-size:.5em">/api/v1</span></h2>
     </div>
-    <div class="legend"><span>🔓 public</span><span>🔑 ต้อง login</span><span>👑 admin</span></div>
-    <div class="api-list">
-      <div class="card"><div class="path">/auth</div><p>🔓 register · login · refresh · forget/reset<br>🔑 me · logout · edit-password</p></div>
-      <div class="card"><div class="path">/products</div><p>🔓 GET (search, type, popular, tag)<br>👑 POST · PUT · DELETE</p></div>
-      <div class="card"><div class="path">/cart</div><p>🔑 GET (พร้อมราคาจาก backend) · POST · PATCH · DELETE</p></div>
-      <div class="card"><div class="path">/custom-design</div><p>🔑 CRUD ช่อที่เซฟ (preset 1–5)</p></div>
-      <div class="card"><div class="path">/user/address</div><p>🔑 CRUD ที่อยู่จัดส่ง</p></div>
-      <div class="card"><div class="path">/payments</div><p>create-intent (PromptPay QR) · poll status</p></div>
-      <div class="card"><div class="path">/blog · /review</div><p>🔓 บทความ · รีวิวลูกค้า</p></div>
-      <div class="card"><div class="path">/ai</div><p>🔑 ask (rate limit) · 👑 sync</p></div>
-      <div class="card soft"><div class="path">userId มาจาก token</div><p>ไม่รับจาก URL / body → ดูได้แค่ข้อมูลของตัวเอง</p></div>
-    </div>
+    <div class="legend"><span>🔓 public</span><span>🔑 ต้อง login</span><span>👑 admin</span><span>· userId มาจาก token เสมอ ไม่รับจาก URL / body</span><span>· กดการ์ดเพื่อดู endpoint</span></div>
+    <!-- การ์ดสร้างจาก apiGroups ใน script ด้านล่าง -->
+    <div class="api-list" id="apiList"></div>
     <div class="card" style="margin-top:1em">
       <h3>ตัวอย่างเส้นทางข้อมูล: ซื้อช่อ 1 ช่อ</h3>
       <div class="flow" style="margin-top:.6em">
@@ -729,7 +741,7 @@ body.scroll .progress { display: none; }
         <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
         <div class="step"><b>Stripe</b><span>PromptPay QR → succeeded</span></div>
         <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
-        <div class="step"><b>Order</b><span>snapshot ราคา <span class="tag">กำลังทำ</span></span></div>
+        <div class="step"><b>POST /orders</b><span>snapshot ราคา + ล้างตะกร้า</span></div>
       </div>
     </div>
   </div>
@@ -858,7 +870,6 @@ body.scroll .progress { display: none; }
     </div>
     <div class="next">
       <b class="muted">สิ่งที่จะทำต่อ:</b>
-      <span class="tag">Order API</span>
       <span class="tag">คิดยอด payment จากตะกร้าที่ backend</span>
       <span class="tag">Blog admin auth</span>
       <span class="tag">Route guard หน้า dashboard</span>
@@ -945,6 +956,18 @@ body.scroll .progress { display: none; }
 </div>
 
 <!-- Image lightbox -->
+<!-- API popup -->
+<div class="overlay" id="apiModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="apiTitle">
+    <button class="btn close" data-close aria-label="ปิด"><i class="fa-solid fa-xmark"></i></button>
+    <span class="tag fill">REST API · /api/v1</span>
+    <h2 id="apiTitle">API ทั้งหมด</h2>
+    <p class="muted small">🔓 public · 🔑 ต้อง login (<code>authen</code>) · 👑 admin (<code>authen</code> + <code>authorize(["admin"])</code>)</p>
+    <div class="api-tabs" id="apiTabs"></div>
+    <div id="apiBody"></div>
+  </div>
+</div>
+
 <div class="overlay lightbox" id="lightbox" hidden>
   <img id="lightImg" alt="">
 </div>
@@ -971,7 +994,7 @@ const features = [
     api: 'POST /payments/create-intent', who: 'Albert · Maliwan (Checkout)',
     desc: 'สรุปยอด → สร้าง QR PromptPay ผ่าน Stripe → poll สถานะจนเป็น succeeded',
     fe: 'CheckoutPage · PaymentQRModal', guard: '—', logic: 'Stripe PaymentIntent (promptpay)', db: 'Stripe (test mode)',
-    note: 'ถัดไป: สร้าง order จริงใน DB และให้ backend คิดยอดจากตะกร้าเอง' },
+    note: 'จ่ายผ่านแล้ว frontend เรียก POST /orders → backend คิดราคาจากตะกร้า เก็บ snapshot ลง orders แล้วล้างตะกร้า · ถัดไป: ให้ create-intent คิดยอดจากตะกร้าที่ backend ด้วย' },
   { key: 'products', cat: 'customer', icon: 'fa-magnifying-glass', name: 'Products + search',
     api: 'GET /products?search=', who: 'Maliwan · วิทวัส',
     desc: 'ดูสินค้าทั้งหมด ค้นหา และ filter ตามประเภท / curated collections',
@@ -1042,6 +1065,139 @@ function openFeature(key) {
   modal.hidden = false;
 }
 
+// ===== API ทั้งหมด (ตรงกับ src/routes/v1 บน backend main) =====
+// a = สิทธิ์: pub 🔓 / auth 🔑 / admin 👑 · warn = ป้ายเตือน (known issue)
+const apiGroups = [
+  { key: 'auth', name: 'Auth', base: '/auth', sum: 'สมัคร · login · refresh token · รหัสผ่าน', eps: [
+    ['POST', '/auth/register', 'pub', 'สมัครสมาชิก (hash password ด้วย bcrypt)'],
+    ['POST', '/auth/login', 'pub', 'ตรวจรหัส → ตั้ง cookie accessToken (15 นาที) + refreshToken (7 วัน)'],
+    ['POST', '/auth/refresh', 'pub', 'ใช้ cookie refreshToken ออก accessToken ใบใหม่'],
+    ['POST', '/auth/forget-password', 'pub', 'ขอรหัสยืนยันสำหรับตั้งรหัสใหม่', 'ยังเป็นรหัสจำลอง'],
+    ['POST', '/auth/reset-password', 'pub', 'ตั้งรหัสผ่านใหม่ด้วยรหัสยืนยัน'],
+    ['POST', '/auth/logout', 'auth', 'ลบ refreshToken ใน DB + ลบ cookie'],
+    ['GET', '/auth/me', 'auth', 'ข้อมูล user ปัจจุบัน (ใช้เช็คตอนเปิดเว็บ)'],
+    ['POST', '/auth/edit-password', 'auth', 'เปลี่ยนรหัสผ่าน (ต้องใส่รหัสเดิม)'],
+    ['GET', '/auth/admin/me', 'admin', 'ทดสอบสิทธิ์ admin'],
+  ]},
+  { key: 'products', name: 'Products', base: '/products', sum: 'สินค้าสำเร็จรูป · ค้นหา · CRUD แอดมิน', eps: [
+    ['GET', '/products', 'pub', 'รายการสินค้า · query: search, product_type, is_popular, is_active, tag'],
+    ['GET', '/products/:id', 'pub', 'สินค้าชิ้นเดียว (populate วัตถุดิบ)'],
+    ['POST', '/products', 'admin', 'เพิ่มสินค้า'],
+    ['PUT', '/products/:id', 'admin', 'แก้สินค้า'],
+    ['DELETE', '/products/:id', 'admin', 'ลบสินค้า'],
+  ]},
+  { key: 'inventory', name: 'Inventory items', base: '/inventory-items', sum: 'วัตถุดิบ (ดอกไม้ · กระดาษห่อ · แจกัน)', eps: [
+    ['GET', '/inventory-items', 'pub', 'รายการวัตถุดิบ (ใช้ในหน้า custom design)'],
+    ['GET', '/inventory-items/:id', 'pub', 'วัตถุดิบชิ้นเดียว'],
+    ['POST', '/inventory-items', 'admin', 'เพิ่มวัตถุดิบ'],
+    ['PUT', '/inventory-items/:id', 'admin', 'แก้วัตถุดิบ / สต็อก'],
+    ['DELETE', '/inventory-items/:id', 'admin', 'ลบวัตถุดิบ'],
+  ]},
+  { key: 'cart', name: 'Cart', base: '/cart', sum: '1 user = 1 ตะกร้า · ราคาคิดที่ backend', eps: [
+    ['GET', '/cart', 'auth', 'ตะกร้า + ราคาจาก backend (subtotal, service_fee, delivery_fee, total)'],
+    ['POST', '/cart', 'auth', 'เพิ่มสินค้า (product_id) หรือช่อ custom (custom_specs) · ของซ้ำตอบ 409'],
+    ['PATCH', '/cart', 'auth', 'แก้ gift note (ไม่เกิน 200 ตัวอักษร)'],
+    ['PATCH', '/cart/:itemId', 'auth', 'เปลี่ยนจำนวน (0 = ลบ)'],
+    ['DELETE', '/cart/:itemId', 'auth', 'ลบสินค้า 1 รายการ'],
+    ['DELETE', '/cart', 'auth', 'ล้างตะกร้า'],
+  ]},
+  { key: 'custom', name: 'Custom design', base: '/custom-design', sum: 'ช่อที่ลูกค้าเซฟ (preset 1–5)', eps: [
+    ['GET', '/custom-design', 'auth', 'ช่อที่เซฟทั้งหมด เรียงตาม preset + unit_price'],
+    ['GET', '/custom-design/:designId', 'auth', 'ช่อเดียว (ใช้ตอนแก้ไข)'],
+    ['POST', '/custom-design', 'auth', 'เซฟช่อใหม่ · preset ซ้ำตอบ 409 PRESET_TAKEN (ส่ง overwrite เพื่อทับ)'],
+    ['PATCH', '/custom-design/:designId', 'auth', 'แก้ช่อ (ส่งเฉพาะ field ที่แก้)'],
+    ['DELETE', '/custom-design/:designId', 'auth', 'ลบช่อ'],
+  ]},
+  { key: 'address', name: 'Address', base: '/user/address', sum: 'ที่อยู่จัดส่ง (ฝังใน users)', eps: [
+    ['GET', '/user/address', 'auth', 'ที่อยู่ทั้งหมดของตัวเอง'],
+    ['POST', '/user/address', 'auth', 'เพิ่มที่อยู่'],
+    ['PATCH', '/user/address/:addressId', 'auth', 'แก้ที่อยู่ / ตั้งเป็น default'],
+    ['DELETE', '/user/address/:addressId', 'auth', 'ลบที่อยู่'],
+  ]},
+  { key: 'orders', name: 'Orders', base: '/orders', sum: 'สร้าง order หลังจ่ายเงิน · ประวัติ · จัดการแอดมิน', eps: [
+    ['POST', '/orders', 'auth', 'สร้าง order จากตะกร้า (backend คิดราคา + snapshot + ล้างตะกร้า)'],
+    ['GET', '/orders/my-orders', 'auth', 'ประวัติการสั่งซื้อของตัวเอง (หน้า Purchases)'],
+    ['PATCH', '/orders/:orderId/cancel', 'auth', 'ยกเลิก order ของตัวเอง (ก่อน shipped)'],
+    ['GET', '/orders', 'admin', 'order ทุก user · query: page, limit, status, search'],
+    ['PATCH', '/orders/:orderId/status', 'admin', 'เปลี่ยนสถานะ pending → processing → shipped → completed'],
+    ['DELETE', '/orders/:orderId', 'admin', 'ลบ order'],
+  ]},
+  { key: 'payments', name: 'Payments', base: '/payments', sum: 'Stripe PromptPay QR', eps: [
+    ['POST', '/payments/create-intent', 'pub', 'สร้าง PaymentIntent → คืน id + รูป QR', 'ยังไม่มี auth'],
+    ['GET', '/payments/:id/status', 'pub', 'สถานะการจ่าย (frontend poll จน succeeded)'],
+  ]},
+  { key: 'blog', name: 'Blog', base: '/blog', sum: 'บทความ Shop blog', eps: [
+    ['GET', '/blog', 'pub', 'บทความทั้งหมด'],
+    ['POST', '/blog', 'pub', 'เพิ่มบทความ', 'ยังไม่มี auth'],
+    ['PATCH', '/blog/:id', 'pub', 'แก้บทความ', 'ยังไม่มี auth'],
+    ['DELETE', '/blog/:id', 'pub', 'ลบบทความ', 'ยังไม่มี auth'],
+  ]},
+  { key: 'review', name: 'Review', base: '/review', sum: 'รีวิวลูกค้า (หน้า Home)', eps: [
+    ['GET', '/review', 'pub', 'รีวิวลูกค้า สุ่มแสดงหน้า Home'],
+  ]},
+  { key: 'ai', name: 'AI chatbot', base: '/ai', sum: 'Ask AI (RAG) · sync คลังความรู้', eps: [
+    ['POST', '/ai/ask', 'auth', 'ถาม AI { question, history } · rate limit 10 ครั้ง/นาที/คน'],
+    ['POST', '/ai/sync', 'admin', 'อัปเดตคลังความรู้ของ AI หลังแก้สินค้า / วัตถุดิบ'],
+  ]},
+];
+const ACCESS_ICON = { pub: '🔓', auth: '🔑', admin: '👑' };
+const totalEps = apiGroups.reduce((n, g) => n + g.eps.length, 0);
+
+// การ์ดบนสไลด์ 04 API
+const apiList = document.getElementById('apiList');
+apiList.innerHTML = apiGroups.map(g => {
+  const icons = [...new Set(g.eps.map(e => ACCESS_ICON[e[2]]))].join(' ');
+  return `<button class="card" data-api="${g.key}">
+      <div class="path">${g.base}<small>${g.eps.length} ${icons}</small></div>
+      <p>${g.sum}</p>
+    </button>`;
+}).join('') + `<button class="card all" data-api="all">
+      <div class="path">ดู API ทั้งหมด<small>${totalEps}</small></div>
+      <p>${apiGroups.length} กลุ่ม · กดเพื่อเปิดรายการเต็ม</p>
+    </button>`;
+
+// popup
+const apiModal = document.getElementById('apiModal');
+const apiTabs = document.getElementById('apiTabs');
+const apiBody = document.getElementById('apiBody');
+apiTabs.innerHTML = `<button data-api="all">ทั้งหมด (${totalEps})</button>` +
+  apiGroups.map(g => `<button data-api="${g.key}">${g.name}</button>`).join('');
+
+function renderApi(key) {
+  const groups = key === 'all' ? apiGroups : apiGroups.filter(g => g.key === key);
+  document.getElementById('apiTitle').textContent = key === 'all' ? `API ทั้งหมด · ${totalEps} endpoints` : `${groups[0].name} · ${groups[0].base}`;
+  apiTabs.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.api === key));
+  apiBody.innerHTML = groups.map(g => `
+    <div class="api-group">
+      ${key === 'all' ? `<h3>${g.name} <code>${g.base}</code></h3>` : ''}
+      ${g.eps.map(([m, p, a, d, warn]) => `
+        <div class="api-row">
+          <span class="m ${m.toLowerCase()}">${m}</span>
+          <span class="p">${p}</span>
+          <span title="${a}">${ACCESS_ICON[a]}</span>
+          <span class="d">${d}${warn ? `<span class="warn">${warn}</span>` : ''}</span>
+        </div>`).join('')}
+    </div>`).join('');
+  apiBody.parentElement.scrollTop = 0;
+}
+
+function openApi(key) {
+  renderApi(key);
+  apiModal.hidden = false;
+}
+
+apiList.addEventListener('click', e => {
+  const card = e.target.closest('[data-api]');
+  if (card) openApi(card.dataset.api);
+});
+apiTabs.addEventListener('click', e => {
+  const btn = e.target.closest('[data-api]');
+  if (btn) renderApi(btn.dataset.api);
+});
+apiModal.addEventListener('click', e => {
+  if (e.target === apiModal || e.target.closest('[data-close]')) apiModal.hidden = true;
+});
+
 // ===== lightbox =====
 const lightbox = document.getElementById('lightbox');
 document.querySelectorAll('[data-zoom]').forEach(el => el.addEventListener('click', e => {
@@ -1053,8 +1209,8 @@ lightbox.addEventListener('click', () => { lightbox.hidden = true; });
 modal.addEventListener('click', e => {
   if (e.target === modal || e.target.closest('[data-close]')) modal.hidden = true;
 });
-const anyOverlayOpen = () => !modal.hidden || !lightbox.hidden;
-const closeOverlays = () => { modal.hidden = true; lightbox.hidden = true; };
+const anyOverlayOpen = () => !modal.hidden || !lightbox.hidden || !apiModal.hidden;
+const closeOverlays = () => { modal.hidden = true; lightbox.hidden = true; apiModal.hidden = true; };
 
 // ===== slides + โหมด =====
 const slides = [...document.querySelectorAll('.slide')];
