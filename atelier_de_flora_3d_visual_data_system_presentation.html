@@ -186,7 +186,14 @@ body.hide-draft .draft { display: none; }
 .title-art { border-radius: 22px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); max-height: 70vh; }
 body.scroll .title-art { max-height: 520px; }
 .title-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 60%; }
-@media (max-width: 620px) { .title-slide h1 { font-size: 2.6em; } }
+.title-art model-viewer {
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  display: block;
+  background: radial-gradient(circle at top, #f9f2ea 0%, #f3efe8 42%, #e8e1d9 100%);
+}
+@media (max-width: 620px) { .title-slide h1 { font-size: 2.6em; } .title-art model-viewer { min-height: 320px; } }
 
 /* ===== Team ===== */
 .member { text-align: left; }
@@ -336,6 +343,7 @@ body.scroll .progress { display: none; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
 </style>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
 </head>
 <body>
 
@@ -369,7 +377,18 @@ body.scroll .progress { display: none; }
         <span class="tag">Gemini RAG</span>
       </div>
     </div>
-    <div class="title-art"><img src="assets/custom-design.jpg" alt="ภาพวาดช่อดอกไม้ กุหลาบ ทานตะวัน ทิวลิป ห่อด้วยกระดาษคราฟท์"></div>
+    <div class="title-art">
+      <model-viewer
+        src="https://rri4tg6y27zcjsqa.public.blob.vercel-storage.com/flower.glb"
+        alt="3D flower model"
+        camera-controls
+        auto-rotate
+        shadow-intensity="1"
+        exposure="1.2"
+        interaction-prompt="none"
+        disable-tap
+      ></model-viewer>
+    </div>
   </div>
 </section>
 
