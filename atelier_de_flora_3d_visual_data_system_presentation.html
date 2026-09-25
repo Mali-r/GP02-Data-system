@@ -1,1237 +1,1132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atelier de Flora | Interactive 3D System Presentation - Team McKraken</title>
-    
-    <!-- External Fonts and Icons -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atelier de Flora — Team McKraken Final Presentation</title>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            900: '#14532d'
-                        },
-                        cyanSignal: '#06b6d4',
-                        blueSignal: '#38bdf8',
-                        violetAccent: '#8b5cf6',
-                        darkText: '#0f172a',
-                        mutedText: '#64748b',
-                        surfaceBg: '#f8fafc',
-                        borderLight: '#e2e8f0'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Space Grotesk', 'sans-serif'],
-                        mono: ['IBM Plex Mono', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        :root {
-            --bg-grid: #e2e8f0;
-            --signal-cyan: #06b6d4;
-            --signal-green: #22c55e;
-            --signal-violet: #8b5cf6;
-        }
+<style>
+/* ===== Design tokens (ตาม Figma / index.css ของ frontend) ===== */
+:root {
+  --primary: #586158;
+  --primary-dark: #3f463f;
+  --primary-soft: #e6e9e4;
+  --secondary: #F9F6F0;
+  --accent: #F3F3F0;
+  --neutral: #4A4A4A;
+  --muted: #7a8078;
+  --bg: #FBF9F8;
+  --card: #ffffff;
+  --destructive: #8F4748;
+  --destructive-soft: #f5e9e9;
+  --border: rgba(146, 155, 145, 0.3);
+  --border-strong: rgba(146, 155, 145, 0.55);
+  --font-display: 'Literata', 'Noto Sans Thai', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(74, 74, 74, 0.04), 0 8px 24px -12px rgba(74, 74, 74, 0.12);
+  --bar-h: 56px;
+}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
-            overflow-x: hidden;
-            scroll-behavior: smooth;
-        }
+* { box-sizing: border-box; }
+html { font-size: 16px; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--neutral);
+  background: var(--bg);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+body.deck { overflow: hidden; }
+@media (min-width: 900px) {
+  body.deck { font-size: clamp(14px, 0.62vw + 0.75vh, 21px); }
+}
+h1, h2, h3, h4 { font-family: var(--font-display); color: var(--primary-dark); margin: 0; font-weight: 600; line-height: 1.2; }
+p { margin: 0; }
+a { color: var(--primary); }
+code, .mono { font-family: var(--font-mono); font-size: 0.86em; }
+code { background: var(--accent); padding: 0.1em 0.4em; border-radius: 5px; color: var(--primary-dark); }
+img { max-width: 100%; display: block; }
+::selection { background: var(--primary-soft); }
 
-        /* Ambient White Grid Canvas Background */
-        .grid-background {
-            background-size: 32px 32px;
-            background-image: 
-                radial-gradient(circle, #cbd5e1 1.2px, transparent 1.2px);
-        }
+/* ===== Top bar ===== */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+  height: var(--bar-h);
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0 clamp(16px, 3vw, 40px);
+  background: rgba(251, 249, 248, 0.88);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.brand { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+.brand-mark { width: 30px; height: 30px; border-radius: 9px; background: var(--primary); color: var(--secondary); display: grid; place-items: center; font-size: 14px; }
+.brand b { font-family: var(--font-display); font-weight: 600; color: var(--primary-dark); font-size: 16px; }
+.brand span { font-size: 11px; color: var(--muted); border: 1px solid var(--border-strong); padding: 1px 8px; border-radius: 99px; }
+.nav { display: flex; gap: 2px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a {
+  text-decoration: none; color: var(--muted); font-family: var(--font-mono); font-size: 12px;
+  padding: 6px 9px; border-radius: 8px; white-space: nowrap;
+}
+.nav a:hover { color: var(--primary-dark); background: var(--accent); }
+.nav a.active { color: var(--secondary); background: var(--primary); }
+.tools { display: flex; gap: 6px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font: 500 13px var(--font-body); color: var(--primary-dark);
+  background: var(--card); border: 1px solid var(--border-strong);
+  padding: 7px 12px; border-radius: 10px; cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+.btn:hover { background: var(--accent); }
+.btn.solid { background: var(--primary); color: var(--secondary); border-color: var(--primary); }
+.btn.solid:hover { background: var(--primary-dark); }
+@media (max-width: 1180px) { .nav { display: none; } .tools { margin-left: auto; } }
+@media (max-width: 560px) { .brand span, .btn .lbl { display: none; } }
 
-        /* Glassmorphism Styles */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-        }
+/* ===== Slides ===== */
+.slide {
+  padding: calc(var(--bar-h) + 40px) clamp(16px, 6vw, 96px) 64px;
+  position: relative;
+}
+.slide-inner { width: 100%; max-width: 1240px; margin: 0 auto; }
+body.scroll .slide { border-bottom: 1px solid var(--border); }
+body.scroll .slide:nth-child(even) { background: var(--secondary); }
 
-        .glass-card-hover {
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .glass-card-hover:hover {
-            transform: translateY(-4px) scale(1.01);
-            background: rgba(255, 255, 255, 0.92);
-            border-color: rgba(56, 189, 248, 0.5);
-            box-shadow: 0 20px 40px -15px rgba(14, 165, 233, 0.15);
-        }
+body.deck main { position: fixed; inset: 0; }
+body.deck .slide {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: calc(var(--bar-h) + 2.2em) clamp(16px, 5vw, 96px) 5.2em;
+  overflow-y: auto;
+  opacity: 0; visibility: hidden; transform: translateY(12px);
+  transition: opacity .45s ease, transform .45s ease, visibility 0s linear .45s;
+}
+body.deck .slide.active {
+  opacity: 1; visibility: visible; transform: none;
+  transition: opacity .45s ease, transform .45s ease;
+}
+body.deck .slide:nth-child(even) { background: var(--secondary); }
+body.deck .slide-inner { margin: auto; }
 
-        .glass-modal {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(203, 213, 225, 0.9);
-            box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.2);
-        }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 0.78em; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--primary);
+}
+.eyebrow .num { background: var(--primary); color: var(--secondary); padding: 2px 8px; border-radius: 6px; }
+.slide-head { margin-bottom: 1.6em; }
+.slide-head h2 { font-size: 2.3em; margin-top: 0.3em; }
+.slide-head .lead { margin-top: 0.5em; color: var(--muted); font-size: 1.05em; max-width: 60em; }
 
-        /* 3D Perspective Transformations */
-        .perspective-container {
-            perspective: 1200px;
-        }
+/* ===== Generic building blocks ===== */
+.grid { display: grid; gap: 1em; }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.split { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2em; align-items: center; }
+@media (max-width: 1000px) { .g4, .g5 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .g3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .split { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .g2, .g3, .g4, .g5 { grid-template-columns: 1fr; } }
 
-        .preserve-3d {
-            transform-style: preserve-3d;
-        }
+.card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.1em 1.2em; box-shadow: var(--shadow);
+}
+.card h3 { font-size: 1.12em; margin-bottom: 0.35em; }
+.card p, .card li { font-size: 0.92em; }
+.card.soft { background: var(--accent); box-shadow: none; }
+.card ul { margin: 0; padding-left: 1.1em; }
+.card li + li { margin-top: 0.3em; }
+.icon {
+  width: 2.3em; height: 2.3em; border-radius: 10px; display: grid; place-items: center;
+  background: var(--primary-soft); color: var(--primary-dark); margin-bottom: 0.7em; font-size: 1em;
+}
+.icon.red { background: var(--destructive-soft); color: var(--destructive); }
+.muted { color: var(--muted); }
+.small { font-size: 0.85em; }
+.tag {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.72em;
+  padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border-strong); color: var(--primary-dark); background: var(--card);
+}
+.tag.fill { background: var(--primary); color: var(--secondary); border-color: var(--primary); }
+.tag.red { color: var(--destructive); border-color: rgba(143, 71, 72, .35); background: var(--destructive-soft); }
+.draft {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.68em; font-weight: 600;
+  color: #8a6d1f; background: #fbf1d5; border: 1px dashed #d4b35c; padding: 1px 7px; border-radius: 6px;
+  vertical-align: middle; margin-left: 6px;
+}
+body.hide-draft .draft { display: none; }
 
-        .tilted-engine-layer {
-            transform: rotateX(28deg) rotateZ(-12deg) rotateY(6deg);
-            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+/* flow chain */
+.flow { display: flex; align-items: stretch; gap: 0.5em; flex-wrap: wrap; }
+.flow .step {
+  flex: 1 1 0; min-width: 8.5em;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.75em 0.85em;
+}
+.flow .step b { display: block; font-size: 0.9em; color: var(--primary-dark); }
+.flow .step span { display: block; font-size: 0.78em; color: var(--muted); margin-top: 2px; }
+.flow .step i { color: var(--primary); margin-bottom: 0.35em; display: block; }
+.flow .arrow { align-self: center; color: var(--border-strong); font-size: 0.9em; }
+@media (max-width: 760px) { .flow { flex-direction: column; } .flow .arrow { transform: rotate(90deg); align-self: flex-start; margin-left: 1em; } }
 
-        .tilted-engine-layer:hover {
-            transform: rotateX(15deg) rotateZ(-4deg) rotateY(2deg) translateZ(10px);
-        }
+/* ===== Slide: title ===== */
+.title-slide h1 { font-size: 4.2em; font-weight: 600; letter-spacing: -0.01em; }
+.title-slide h1 em { font-style: italic; color: var(--primary); font-weight: 400; }
+.title-slide .sub { font-size: 1.3em; margin-top: 0.6em; max-width: 30em; }
+.title-slide .meta { display: flex; flex-wrap: wrap; gap: 0.6em; margin-top: 1.8em; }
+.title-art { border-radius: 22px; overflow: hidden; border: 1px solid var(--border); box-shadow: var(--shadow); max-height: 70vh; }
+body.scroll .title-art { max-height: 520px; }
+.title-art img { width: 100%; height: 100%; object-fit: cover; object-position: center 60%; }
+@media (max-width: 620px) { .title-slide h1 { font-size: 2.6em; } }
 
-        /* Custom Dynamic SVG Signals */
-        .pulse-path {
-            stroke-dasharray: 8, 8;
-            animation: strokeDash 25s linear infinite;
-        }
+/* ===== Team ===== */
+.member { text-align: left; }
+.avatar {
+  width: 3.4em; height: 3.4em; border-radius: 50%; display: grid; place-items: center;
+  background: var(--primary); color: var(--secondary); font-family: var(--font-display); font-size: 1.1em; margin-bottom: 0.8em;
+}
+.member h3 { font-size: 1.05em; }
+.member .role { font-size: 0.8em; color: var(--primary); font-weight: 600; margin: 0.15em 0 0.6em; }
+.member ul { font-size: 0.85em; }
+.member .me { border-top: 1px solid var(--border); margin-top: 0.8em; padding-top: 0.6em; font-size: 0.8em; color: var(--muted); }
 
-        @keyframes strokeDash {
-            to { stroke-dashoffset: -1000; }
-        }
+/* ===== Features ===== */
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1em; }
+.filters button { font: 500 0.82em var(--font-body); padding: 6px 12px; border-radius: 99px; border: 1px solid var(--border-strong); background: var(--card); color: var(--primary-dark); cursor: pointer; }
+.filters button.on { background: var(--primary); color: var(--secondary); border-color: var(--primary); }
+.feature {
+  cursor: pointer; text-align: left; font: inherit; color: inherit; width: 100%;
+  transition: transform .25s ease, border-color .25s ease, opacity .25s ease;
+  display: flex; flex-direction: column;
+}
+.feature:hover, .feature:focus-visible { transform: translateY(-3px); border-color: var(--primary); outline: none; }
+.feature .top { display: flex; justify-content: space-between; align-items: flex-start; }
+.feature .api { font-family: var(--font-mono); font-size: 0.75em; color: var(--muted); margin-top: 0.2em; }
+.feature .who { margin-top: auto; padding-top: 0.6em; font-size: 0.75em; color: var(--muted); display: flex; justify-content: space-between; }
+.feature.dim { opacity: 0.25; }
+.feature.hl { border-color: var(--primary); background: linear-gradient(180deg, var(--card), var(--secondary)); }
 
-        .photon-packet {
-            animation: movePacket 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
+/* ===== Modal / lightbox ===== */
+.overlay {
+  position: fixed; inset: 0; z-index: 60; background: rgba(40, 45, 40, 0.45);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+}
+.overlay[hidden] { display: none; }
+.modal {
+  background: var(--bg); border-radius: 20px; border: 1px solid var(--border);
+  width: 100%; max-width: 980px; max-height: 90vh; overflow-y: auto; padding: 28px; position: relative;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .35); font-size: 16px;
+}
+.modal .close { position: absolute; top: 16px; right: 16px; }
+.modal h2 { font-size: 1.7em; margin: 0.35em 0 0.2em; }
+.pipe { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 1.3em 0; }
+.pipe div { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+.pipe small { display: block; font-family: var(--font-mono); font-size: 10px; letter-spacing: .05em; color: var(--primary); font-weight: 600; }
+.pipe span { font-family: var(--font-mono); font-size: 12.5px; color: var(--primary-dark); word-break: break-word; }
+@media (max-width: 760px) { .pipe { grid-template-columns: 1fr; } }
+.lightbox img { max-width: 94vw; max-height: 88vh; border-radius: 12px; background: #fff; }
 
-        /* Floating Animation */
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-8px) rotate(0.5deg); }
-        }
+/* ===== Highlights ===== */
+.steps { counter-reset: s; display: grid; gap: 0.7em; }
+.steps > div { counter-increment: s; display: grid; grid-template-columns: 2.2em 1fr; gap: 0.6em; align-items: start; }
+.steps > div::before {
+  content: counter(s); width: 2em; height: 2em; border-radius: 50%; display: grid; place-items: center;
+  background: var(--primary); color: var(--secondary); font-family: var(--font-display); font-size: 0.9em;
+}
+.steps b { color: var(--primary-dark); }
+.steps p { font-size: 0.92em; }
+.formula { font-family: var(--font-mono); font-size: 0.82em; background: var(--card); border: 1px dashed var(--border-strong); border-radius: 12px; padding: 0.8em 1em; line-height: 1.8; }
+.formula b { color: var(--primary-dark); }
+.chat { display: grid; gap: 0.5em; }
+.bubble { max-width: 88%; padding: 0.6em 0.9em; border-radius: 14px; font-size: 0.88em; }
+.bubble.q { justify-self: end; background: var(--primary); color: var(--secondary); border-bottom-right-radius: 4px; }
+.bubble.a { background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
 
-        .animate-float-slow {
-            animation: floatSlow 6s ease-in-out infinite;
-        }
+/* ===== Tech ===== */
+.arch { display: grid; grid-template-columns: 1fr auto 1fr auto 1.2fr; gap: 0.8em; align-items: center; }
+.arch .box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1em; text-align: center; }
+.arch .box i { font-size: 1.5em; color: var(--primary); }
+.arch .box b { display: block; margin-top: 0.4em; color: var(--primary-dark); }
+.arch .box span { font-size: 0.78em; color: var(--muted); }
+.arch .stack { display: grid; gap: 0.5em; }
+.arch .stack .box { display: flex; align-items: center; gap: 0.8em; text-align: left; padding: 0.7em 1em; }
+.arch .stack .box i { font-size: 1.2em; width: 1.3em; }
+.arch .stack .box b { margin: 0; }
+.arch .link { text-align: center; font-family: var(--font-mono); font-size: 0.72em; color: var(--muted); }
+.arch .link i { display: block; color: var(--border-strong); font-size: 1.3em; }
+@media (max-width: 900px) { .arch { grid-template-columns: 1fr; } .arch .link i { transform: rotate(90deg); } }
+.stack-table { width: 100%; border-collapse: collapse; font-size: 0.88em; }
+.stack-table td { padding: 0.5em 0.6em; border-bottom: 1px solid var(--border); vertical-align: top; }
+.stack-table td:first-child { width: 7.5em; font-weight: 600; color: var(--primary-dark); white-space: nowrap; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { font-size: 0.85em; background: var(--accent); border: 1px solid var(--border); padding: 2px 9px; border-radius: 8px; }
 
-        .animate-float-delayed {
-            animation: floatSlow 7s ease-in-out 2s infinite;
-        }
+/* ===== Data ===== */
+.er { cursor: zoom-in; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: #fff; }
+.er img { width: 100%; }
+.er-cap { font-size: 0.75em; color: var(--muted); margin-top: 0.4em; }
+.rules { display: grid; gap: 0.55em; }
+.rules div { display: grid; grid-template-columns: 1.8em 1fr; gap: 0.5em; font-size: 0.9em; }
+.rules div b:first-child { font-family: var(--font-display); color: var(--primary); font-size: 1.2em; line-height: 1.2; }
+.api-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.6em; }
+@media (max-width: 900px) { .api-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .api-list { grid-template-columns: 1fr; } }
+.api-list .card { padding: 0.8em 1em; }
+.api-list .path { font-family: var(--font-mono); font-size: 0.9em; color: var(--primary-dark); font-weight: 600; }
+.api-list p { font-size: 0.8em; color: var(--muted); margin-top: 0.2em; }
+.legend { display: flex; gap: 1em; flex-wrap: wrap; font-size: 0.8em; color: var(--muted); margin-bottom: 0.8em; }
 
-        /* Modal Zoom Depth Transitions */
-        .universe-zoom-out {
-            transform: scale(0.85) translateZ(-200px);
-            filter: blur(6px);
-            opacity: 0.3;
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+/* ===== Problem ===== */
+.problem .p { color: var(--destructive); font-size: 0.78em; font-family: var(--font-mono); font-weight: 600; display: flex; gap: 6px; align-items: center; }
+.problem h3 { font-size: 1em; margin: 0.35em 0 0.6em; }
+.problem .s { border-top: 1px solid var(--border); padding-top: 0.6em; font-size: 0.86em; display: grid; grid-template-columns: 1.2em 1fr; gap: 0.3em; }
+.problem .s i { color: var(--primary); margin-top: 0.25em; }
+.problem .by { font-size: 0.72em; color: var(--muted); margin-top: 0.5em; }
+.next { display: flex; flex-wrap: wrap; gap: 0.5em; align-items: center; margin-top: 1.2em; font-size: 0.85em; }
 
-        .modal-zoom-in {
-            opacity: 1;
-            transform: scale(1) translateZ(0);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+/* ===== Process ===== */
+.kanban { display: flex; gap: 0.4em; flex-wrap: wrap; }
+.kanban span { flex: 1 1 auto; text-align: center; font-size: 0.78em; padding: 0.45em 0.6em; border-radius: 8px; background: var(--card); border: 1px solid var(--border); }
+.kanban span:last-child { background: var(--primary); color: var(--secondary); border-color: var(--primary); }
+.timeline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8em; }
+@media (max-width: 760px) { .timeline { grid-template-columns: 1fr; } }
+.timeline .card { border-top: 3px solid var(--primary); }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
+/* ===== BSM ===== */
+.bsm-col h3 { display: flex; align-items: center; gap: 0.5em; }
+.bsm-col .item { border-top: 1px solid var(--border); padding-top: 0.55em; margin-top: 0.55em; font-size: 0.88em; }
+.bsm-col .item b { color: var(--primary-dark); display: block; font-size: 0.95em; }
+
+/* ===== Closing ===== */
+.closing { text-align: center; }
+.closing h2 { font-size: 3.6em; }
+.closing .links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6em; margin-top: 2em; }
+
+/* ===== Presenter notes ===== */
+.notes { display: none; margin-top: 1.4em; padding: 0.8em 1em; border-radius: 12px; background: #fff8e6; border: 1px dashed #d4b35c; font-size: 0.82em; color: #6b5516; }
+.notes b { color: #6b5516; }
+body.show-notes .notes { display: block; }
+
+/* ===== Deck controls ===== */
+.deckbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; height: 48px;
+  display: none; align-items: center; justify-content: center; gap: 12px;
+  font-size: 13px; color: var(--muted);
+}
+body.deck .deckbar { display: flex; }
+.deckbar button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--card); color: var(--primary-dark); cursor: pointer; }
+.deckbar button:hover { background: var(--accent); }
+.deckbar .count { font-family: var(--font-mono); min-width: 5.5em; text-align: center; }
+.deckbar .hint { position: absolute; right: clamp(16px, 3vw, 40px); font-size: 11px; }
+@media (max-width: 760px) { .deckbar .hint { display: none; } }
+.progress { position: fixed; left: 0; top: var(--bar-h); height: 2px; background: var(--primary); z-index: 41; transition: width .35s ease; }
+body.scroll .progress { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
 </head>
-<body class="grid-background min-h-screen text-slate-800 antialiased selection:bg-cyan-100 selection:text-cyan-900">
+<body>
 
-    <!-- Fixed Navigation Bar -->
-    <header class="fixed top-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/80 px-4 md:px-8 py-3 transition-all duration-300">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 via-emerald-500 to-indigo-500 p-[2px] shadow-sm">
-                    <div class="w-full h-full bg-white rounded-[6px] flex items-center justify-center">
-                        <i class="fa-solid fa-cube text-xs text-cyan-600"></i>
-                    </div>
-                </div>
-                <div>
-                    <div class="flex items-center space-x-2">
-                        <span class="font-heading font-bold text-slate-900 tracking-tight text-sm md:text-base">Atelier de Flora</span>
-                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-700 border border-cyan-200/60 font-medium">Team McKraken</span>
-                    </div>
-                    <p class="text-[11px] text-slate-500 font-mono hidden md:block">3D System Visual Architecture • Final Presentation</p>
-                </div>
-            </div>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark"><i class="fa-solid fa-seedling"></i></div>
+    <b>Atelier de Flora</b>
+    <span>Team McKraken · GP02</span>
+  </div>
+  <nav class="nav" id="nav"></nav>
+  <div class="tools">
+    <button class="btn" id="modeBtn" title="สลับโหมด (M)"><i class="fa-solid fa-display"></i><span class="lbl">Slides</span></button>
+    <a class="btn solid" href="https://jsd-13-group-project2-mc-kraken-spr.vercel.app/" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i><span class="lbl">Live Web</span></a>
+  </div>
+</header>
+<div class="progress" id="progress"></div>
 
-            <!-- Header Section Quick Links -->
-            <nav class="hidden lg:flex items-center space-x-1 font-mono text-xs">
-                <a href="#hero" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">01 Concept</a>
-                <a href="#floating-universe" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">02 Features</a>
-                <a href="#backend-engine" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">03 Engine</a>
-                <a href="#auth-flow" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">04 Security</a>
-                <a href="#mongodb-schema" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">05 Data Map</a>
-                <a href="#sprint-kanban" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">06 Team Work</a>
-                <a href="#system-impact" class="px-3 py-1.5 rounded-md text-slate-600 hover:text-cyan-600 hover:bg-slate-100 transition-colors">07 Impact</a>
-            </nav>
+<main id="deck">
 
-            <!-- External Deployment & Board Links -->
-            <div class="flex items-center space-x-2">
-                <a href="https://jsd-13-group-project2-mc-kraken-spr.vercel.app/" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white font-mono text-xs font-medium hover:bg-slate-800 transition-all flex items-center space-x-1.5 shadow-sm">
-                    <i class="fa-solid fa-globe text-cyan-400"></i>
-                    <span>Live Web</span>
-                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-400"></i>
-                </a>
-                <a href="https://miro.com/app/board/uXjVHuvGF_0=/" target="_blank" class="px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-700 border border-amber-300/60 font-mono text-xs font-medium hover:bg-amber-500/20 transition-all flex items-center space-x-1.5">
-                    <i class="fa-solid fa-chalkboard text-amber-600"></i>
-                    <span>Miro Board</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- SECTION 1: HERO & SYSTEM PIPELINE -->
-    <section id="hero" class="pt-28 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            <div class="lg:col-span-5 space-y-6">
-                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-mono text-xs">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>System Online • All Pipelines Operational</span>
-                </div>
-
-                <h1 class="text-4xl md:text-5xl font-heading font-extrabold text-slate-900 tracking-tight leading-tight">
-                    Atelier de Flora
-                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 via-teal-600 to-indigo-600 text-3xl md:text-4xl mt-1">
-                        Full-Stack E-commerce Universe
-                    </span>
-                </h1>
-
-                <p class="text-slate-600 text-sm md:text-base leading-relaxed">
-                    Explore the 6th-dimensional data ecosystem behind the Atelier de Flora boutique flower platform. Unveiling end-to-end component flows, REST API contracts, backend logic handlers, security middleware, and Mongoose data persistence.
-                </p>
-
-                <div class="flex flex-wrap gap-3 font-mono text-xs pt-2">
-                    <div class="px-3 py-2 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center space-x-2">
-                        <i class="fa-brands fa-react text-cyan-500 text-base"></i>
-                        <span>React 19 + Vite</span>
-                    </div>
-                    <div class="px-3 py-2 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center space-x-2">
-                        <i class="fa-brands fa-node-js text-emerald-600 text-base"></i>
-                        <span>Node.js Express</span>
-                    </div>
-                    <div class="px-3 py-2 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center space-x-2">
-                        <i class="fa-solid fa-database text-emerald-500 text-base"></i>
-                        <span>MongoDB Atlas</span>
-                    </div>
-                    <div class="px-3 py-2 rounded-lg bg-white border border-slate-200 shadow-sm flex items-center space-x-2">
-                        <i class="fa-solid fa-server text-indigo-500 text-base"></i>
-                        <span>Vercel + Render</span>
-                    </div>
-                </div>
-
-                <div class="pt-2 flex items-center space-x-4">
-                    <a href="#floating-universe" class="px-5 py-3 rounded-xl bg-cyan-600 text-white font-medium text-sm shadow-md hover:bg-cyan-700 transition-all flex items-center space-x-2">
-                        <i class="fa-solid fa-diagram-project"></i>
-                        <span>Enter Task Universe</span>
-                    </a>
-                    <a href="#backend-engine" class="px-5 py-3 rounded-xl bg-white text-slate-700 border border-slate-200 text-sm font-medium hover:bg-slate-50 transition-all flex items-center space-x-2">
-                        <i class="fa-solid fa-microchip text-slate-500"></i>
-                        <span>Backend Engine</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Top-level Architecture Flow Map -->
-            <div class="lg:col-span-7">
-                <div class="glass-card rounded-2xl p-6 relative overflow-hidden border border-slate-200/80">
-                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                        <div class="flex items-center space-x-2">
-                            <span class="w-3 h-3 rounded-full bg-rose-400"></span>
-                            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
-                            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
-                            <span class="font-mono text-xs text-slate-500 ml-2">system_architecture_overview.svg</span>
-                        </div>
-                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">LIVE SIGNAL</span>
-                    </div>
-
-                    <!-- Flow Diagram Grid -->
-                    <div class="relative py-4">
-                        <div class="grid grid-cols-5 gap-2 text-center relative z-10 font-mono">
-                            <!-- Node 1: User Client -->
-                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-cyan-400 transition-all">
-                                <div class="w-10 h-10 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-lg font-bold">
-                                    <i class="fa-solid fa-laptop-code"></i>
-                                </div>
-                                <span class="text-xs font-semibold text-slate-800">CLIENT</span>
-                                <span class="text-[10px] text-slate-400">Browser / UI</span>
-                            </div>
-
-                            <!-- Node 2: Frontend App -->
-                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-cyan-400 transition-all">
-                                <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-lg font-bold">
-                                    <i class="fa-brands fa-react"></i>
-                                </div>
-                                <span class="text-xs font-semibold text-slate-800">FRONTEND</span>
-                                <span class="text-[10px] text-slate-400">Vercel React 19</span>
-                            </div>
-
-                            <!-- Node 3: REST API Gateway -->
-                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-violet-400 transition-all">
-                                <div class="w-10 h-10 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center text-lg font-bold">
-                                    <i class="fa-solid fa-network-wired"></i>
-                                </div>
-                                <span class="text-xs font-semibold text-slate-800">REST API</span>
-                                <span class="text-[10px] text-slate-400">/api/v1 Routes</span>
-                            </div>
-
-                            <!-- Node 4: Express Backend -->
-                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-emerald-400 transition-all">
-                                <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold">
-                                    <i class="fa-brands fa-node-js"></i>
-                                </div>
-                                <span class="text-xs font-semibold text-slate-800">BACKEND</span>
-                                <span class="text-[10px] text-slate-400">Render Node Server</span>
-                            </div>
-
-                            <!-- Node 5: MongoDB Core -->
-                            <div class="p-3 rounded-xl bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center space-y-2 group hover:border-emerald-500 transition-all">
-                                <div class="w-10 h-10 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center text-lg font-bold">
-                                    <i class="fa-solid fa-database"></i>
-                                </div>
-                                <span class="text-xs font-semibold text-slate-800">MONGODB</span>
-                                <span class="text-[10px] text-slate-400">FlowerShop DB</span>
-                            </div>
-                        </div>
-
-                        <!-- Dynamic Connecting Lines SVG Overlay -->
-                        <svg class="absolute top-1/2 left-0 w-full h-8 -translate-y-1/2 pointer-events-none z-0" overflow="visible">
-                            <line x1="10%" y1="50%" x2="90%" y2="50%" stroke="#e2e8f0" stroke-width="2" stroke-dasharray="4 4" />
-                            <circle cx="20%" cy="50%" r="4" fill="#06b6d4">
-                                <animate attributeName="cx" values="10%;90%;10%" dur="4s" repeatCount="indefinite" />
-                            </circle>
-                            <circle cx="40%" cy="50%" r="4" fill="#22c55e">
-                                <animate attributeName="cx" values="90%;10%;90%" dur="5s" repeatCount="indefinite" />
-                            </circle>
-                        </svg>
-                    </div>
-
-                    <!-- Micro System Stats Footer -->
-                    <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-3 text-center font-mono text-[11px] text-slate-500">
-                        <div>
-                            <span class="block font-bold text-slate-800 text-xs">JWT Cookie Auth</span>
-                            <span>httpOnly Security</span>
-                        </div>
-                        <div>
-                            <span class="block font-bold text-slate-800 text-xs">Mongoose Schemas</span>
-                            <span>Strict Model Enforcers</span>
-                        </div>
-                        <div>
-                            <span class="block font-bold text-slate-800 text-xs">Server Logic</span>
-                            <span>Atomic Stock Rules</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- SECTION 2: FLOATING TASK UNIVERSE -->
-    <section id="floating-universe" class="py-16 px-4 md:px-8 max-w-7xl mx-auto relative min-h-[750px]">
-        <div id="universe-wrapper" class="transition-all duration-500">
-            
-            <div class="text-center max-w-2xl mx-auto mb-8">
-                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-700 font-mono text-xs mb-3">
-                    <i class="fa-solid fa-network-wired"></i>
-                    <span>Interactive Node Architecture Graph</span>
-                </div>
-                <h2 class="text-3xl font-heading font-bold text-slate-900">
-                    Floating Task Universe
-                </h2>
-                <p class="text-slate-500 text-sm mt-2">
-                    Click any floating task node to WHOOSH inside its complete component $\rightarrow$ API $\rightarrow$ controller $\rightarrow$ Mongoose model flow.
-                </p>
-
-                <!-- Filter Toggle Buttons -->
-                <div class="flex flex-wrap items-center justify-center gap-2 mt-6 font-mono text-xs">
-                    <button onclick="filterUniverse('all')" class="filter-btn active px-3 py-1.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-all" data-filter="all">All Features</button>
-                    <button onclick="filterUniverse('core')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-cyan-400 transition-all" data-filter="core">Core E-commerce</button>
-                    <button onclick="filterUniverse('user')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-cyan-400 transition-all" data-filter="user">User & Auth</button>
-                    <button onclick="filterUniverse('admin')" class="filter-btn px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:border-cyan-400 transition-all" data-filter="admin">Admin & Operations</button>
-                </div>
-            </div>
-
-            <!-- Visual Graph Container -->
-            <div class="relative w-full h-[580px] rounded-3xl bg-white/60 border border-slate-200/90 shadow-xl overflow-hidden p-6">
-                
-                <!-- SVG Network Connecting Lines -->
-                <svg id="universe-svg" class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.6" />
-                            <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.2" />
-                        </linearGradient>
-                        <linearGradient id="violetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.6" />
-                            <stop offset="100%" stop-color="#c084fc" stop-opacity="0.2" />
-                        </linearGradient>
-                    </defs>
-                    <!-- Curved Dynamic Connection Lines between Nodes & Core -->
-                    <path d="M 500 290 Q 280 140 220 120" stroke="url(#cyanGrad)" stroke-width="2" fill="none" class="pulse-path" />
-                    <path d="M 500 290 Q 720 140 780 120" stroke="url(#cyanGrad)" stroke-width="2" fill="none" class="pulse-path" />
-                    <path d="M 500 290 Q 200 290 180 290" stroke="url(#violetGrad)" stroke-width="2" fill="none" class="pulse-path" />
-                    <path d="M 500 290 Q 800 290 820 290" stroke="url(#cyanGrad)" stroke-width="2" fill="none" class="pulse-path" />
-                    <path d="M 500 290 Q 280 440 220 460" stroke="url(#violetGrad)" stroke-width="2" fill="none" class="pulse-path" />
-                    <path d="M 500 290 Q 720 440 780 460" stroke="url(#cyanGrad)" stroke-width="2" fill="none" class="pulse-path" />
-                    <path d="M 500 290 Q 500 480 500 500" stroke="url(#violetGrad)" stroke-width="2" fill="none" class="pulse-path" />
-                </svg>
-
-                <!-- Central Node: ATELIER DATA CORE -->
-                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                    <div class="w-44 h-44 rounded-full bg-gradient-to-tr from-cyan-500 via-teal-500 to-indigo-600 p-1 shadow-2xl animate-pulse">
-                        <div class="w-full h-full rounded-full bg-white flex flex-col items-center justify-center p-4 text-center">
-                            <i class="fa-solid fa-database text-3xl text-cyan-600 mb-1"></i>
-                            <span class="font-heading font-extrabold text-sm text-slate-900 leading-tight">ATELIER DATA CORE</span>
-                            <span class="font-mono text-[10px] text-emerald-600 font-semibold mt-1">MongoDB Atlas</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FLOATING NODE 1: Browse Products -->
-                <div class="node-item absolute left-[12%] top-[12%] z-30 animate-float-slow" data-category="core" onclick="openFeatureModal('browse-products')">
-                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-cyan-200/80">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="p-2 rounded-lg bg-cyan-50 text-cyan-600"><i class="fa-solid fa-boxes-stacked"></i></span>
-                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
-                        </div>
-                        <h3 class="font-heading font-bold text-sm text-slate-900">Browse Products</h3>
-                        <p class="text-[11px] text-slate-500 font-mono mt-1">GET /api/v1/products</p>
-                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                            <span>Assignee: Maliwan</span>
-                            <i class="fa-solid fa-chevron-right text-cyan-500"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FLOATING NODE 2: Read Blog -->
-                <div class="node-item absolute right-[12%] top-[12%] z-30 animate-float-delayed" data-category="core" onclick="openFeatureModal('read-blog')">
-                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-cyan-200/80">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="p-2 rounded-lg bg-teal-50 text-teal-600"><i class="fa-solid fa-newspaper"></i></span>
-                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
-                        </div>
-                        <h3 class="font-heading font-bold text-sm text-slate-900">Read Blog</h3>
-                        <p class="text-[11px] text-slate-500 font-mono mt-1">GET /api/v1/blog</p>
-                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                            <span>Assignee: Jittrin</span>
-                            <i class="fa-solid fa-chevron-right text-cyan-500"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FLOATING NODE 3: Authentication -->
-                <div class="node-item absolute left-[8%] top-[42%] z-30 animate-float-delayed" data-category="user" onclick="openFeatureModal('authentication')">
-                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-violet-200/80">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="p-2 rounded-lg bg-violet-50 text-violet-600"><i class="fa-solid fa-shield-halved"></i></span>
-                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
-                        </div>
-                        <h3 class="font-heading font-bold text-sm text-slate-900">Authentication</h3>
-                        <p class="text-[11px] text-slate-500 font-mono mt-1">POST /auth/login</p>
-                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                            <span>Assignee: Whittawat</span>
-                            <i class="fa-solid fa-chevron-right text-violet-500"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FLOATING NODE 4: Cart Management -->
-                <div class="node-item absolute right-[8%] top-[42%] z-30 animate-float-slow" data-category="core" onclick="openFeatureModal('cart')">
-                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-cyan-200/80">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="p-2 rounded-lg bg-blue-50 text-blue-600"><i class="fa-solid fa-cart-shopping"></i></span>
-                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
-                        </div>
-                        <h3 class="font-heading font-bold text-sm text-slate-900">Cart Pipeline</h3>
-                        <p class="text-[11px] text-slate-500 font-mono mt-1">POST /api/v1/cart</p>
-                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                            <span>Assignee: Albert</span>
-                            <i class="fa-solid fa-chevron-right text-cyan-500"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FLOATING NODE 5: Address Management -->
-                <div class="node-item absolute left-[12%] bottom-[10%] z-30 animate-float-slow" data-category="user" onclick="openFeatureModal('address')">
-                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-violet-200/80">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="p-2 rounded-lg bg-indigo-50 text-indigo-600"><i class="fa-solid fa-map-location-dot"></i></span>
-                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
-                        </div>
-                        <h3 class="font-heading font-bold text-sm text-slate-900">Customer Address</h3>
-                        <p class="text-[11px] text-slate-500 font-mono mt-1">PATCH /user/address</p>
-                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                            <span>Assignee: Poramet</span>
-                            <i class="fa-solid fa-chevron-right text-violet-500"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FLOATING NODE 6: Checkout / Order -->
-                <div class="node-item absolute right-[12%] bottom-[10%] z-30 animate-float-delayed" data-category="core" onclick="openFeatureModal('checkout')">
-                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-52 cursor-pointer border border-cyan-200/80">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="p-2 rounded-lg bg-emerald-50 text-emerald-600"><i class="fa-solid fa-receipt"></i></span>
-                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
-                        </div>
-                        <h3 class="font-heading font-bold text-sm text-slate-900">Checkout & Orders</h3>
-                        <p class="text-[11px] text-slate-500 font-mono mt-1">POST /api/v1/orders</p>
-                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                            <span>Assignee: Maliwan</span>
-                            <i class="fa-solid fa-chevron-right text-cyan-500"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- FLOATING NODE 7: Admin Operations -->
-                <div class="node-item absolute left-1/2 bottom-[4%] -translate-x-1/2 z-30 animate-float-slow" data-category="admin" onclick="openFeatureModal('admin')">
-                    <div class="glass-card glass-card-hover p-4 rounded-2xl w-56 cursor-pointer border border-amber-200/80">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="p-2 rounded-lg bg-amber-50 text-amber-600"><i class="fa-solid fa-user-gear"></i></span>
-                            <span class="font-mono text-[10px] px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold">COMPLETED</span>
-                        </div>
-                        <h3 class="font-heading font-bold text-sm text-slate-900">Admin Management</h3>
-                        <p class="text-[11px] text-slate-500 font-mono mt-1">authorize("admin")</p>
-                        <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                            <span>Assignee: Whittawat / Jittrin</span>
-                            <i class="fa-solid fa-chevron-right text-amber-500"></i>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- FEATURE DETAIL GLASS MODAL (Zoom-in WHOOSH Destination) -->
-    <div id="feature-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-500">
-        <div id="modal-container" class="glass-modal rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-y-auto p-6 md:p-8 relative translate-y-8 transition-all duration-500">
-            
-            <!-- Modal Close Button -->
-            <button onclick="closeFeatureModal()" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition-colors flex items-center justify-center">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-
-            <!-- Dynamic Modal Content Header -->
-            <div class="flex items-center space-x-3 mb-2">
-                <span id="modal-tag-type" class="px-3 py-1 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-700 font-mono text-xs font-semibold">FEATURE PIPELINE</span>
-                <span id="modal-assignee" class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 font-mono text-xs">Assignee Name</span>
-            </div>
-            
-            <h2 id="modal-title" class="text-2xl md:text-3xl font-heading font-extrabold text-slate-900">Feature Name</h2>
-            <p id="modal-subtitle" class="text-sm text-slate-500 font-mono mt-1">Detailed Technical Data Pathway</p>
-
-            <!-- Multi-Layer Technical Flow Pipeline -->
-            <div class="mt-8 space-y-4">
-                <h3 class="text-xs font-mono font-bold text-slate-400 tracking-wider uppercase">End-to-End Execution Flow</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-6 gap-3 text-left font-mono">
-                    <!-- Layer 1: Component -->
-                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
-                        <span class="text-[10px] text-cyan-600 font-bold block mb-1">01 FRONTEND</span>
-                        <span id="flow-component" class="text-xs font-semibold text-slate-800 block">ProductCard.jsx</span>
-                    </div>
-
-                    <!-- Layer 2: API Contract -->
-                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
-                        <span class="text-[10px] text-indigo-600 font-bold block mb-1">02 API ROUTE</span>
-                        <span id="flow-api" class="text-xs font-semibold text-slate-800 block">GET /products</span>
-                    </div>
-
-                    <!-- Layer 3: Handler/Controller -->
-                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
-                        <span class="text-[10px] text-violet-600 font-bold block mb-1">03 CONTROLLER</span>
-                        <span id="flow-handler" class="text-xs font-semibold text-slate-800 block">getProductsHandler</span>
-                    </div>
-
-                    <!-- Layer 4: Service Rules -->
-                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
-                        <span class="text-[10px] text-amber-600 font-bold block mb-1">04 SERVICE</span>
-                        <span id="flow-service" class="text-xs font-semibold text-slate-800 block">Stock & Filter</span>
-                    </div>
-
-                    <!-- Layer 5: Mongoose Model -->
-                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
-                        <span class="text-[10px] text-emerald-600 font-bold block mb-1">05 MONGOOSE</span>
-                        <span id="flow-model" class="text-xs font-semibold text-slate-800 block">Product.find()</span>
-                    </div>
-
-                    <!-- Layer 6: MongoDB Collection -->
-                    <div class="p-3 rounded-xl bg-white border border-slate-200/90 shadow-sm">
-                        <span class="text-[10px] text-teal-600 font-bold block mb-1">06 DATABASE</span>
-                        <span id="flow-db" class="text-xs font-semibold text-slate-800 block">products</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Deep Architectural Technical Details -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                <div class="p-5 rounded-2xl bg-white/80 border border-slate-200/80">
-                    <h4 class="font-heading font-bold text-slate-900 text-sm mb-2 flex items-center space-x-2">
-                        <i class="fa-solid fa-code text-cyan-600"></i>
-                        <span>Business & Controller Logic</span>
-                    </h4>
-                    <p id="modal-logic-desc" class="text-xs text-slate-600 leading-relaxed font-sans">
-                        Detailed logic description will populate dynamically...
-                    </p>
-                </div>
-
-                <div class="p-5 rounded-2xl bg-white/80 border border-slate-200/80">
-                    <h4 class="font-heading font-bold text-slate-900 text-sm mb-2 flex items-center space-x-2">
-                        <i class="fa-solid fa-database text-emerald-600"></i>
-                        <span>MongoDB Model Schema & Integrity</span>
-                    </h4>
-                    <p id="modal-schema-desc" class="text-xs text-slate-600 leading-relaxed font-sans">
-                        Schema validation specs will populate dynamically...
-                    </p>
-                </div>
-            </div>
-
-            <div class="mt-8 pt-4 border-t border-slate-200/80 flex items-center justify-between font-mono text-xs text-slate-500">
-                <span>Press <kbd class="px-2 py-0.5 rounded bg-slate-200 text-slate-700">ESC</kbd> or click button to exit visualization</span>
-                <button onclick="closeFeatureModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-sans text-xs font-medium hover:bg-slate-800 transition-all">Close Pipeline</button>
-            </div>
-        </div>
+<!-- ============ TITLE ============ -->
+<section class="slide title-slide" id="title" data-nav="Home">
+  <div class="slide-inner split">
+    <div>
+      <div class="eyebrow">JSD#13 · Final Project · Group #2</div>
+      <h1 style="margin-top:.35em">Atelier <em>de</em> Flora</h1>
+      <p class="sub">ร้านดอกไม้ออนไลน์ที่ให้ลูกค้า <b>ออกแบบช่อเอง</b> และมี <b>AI</b> ช่วยจัดช่อตามงบ</p>
+      <div class="meta">
+        <span class="tag fill">Team McKraken</span>
+        <span class="tag">React · Express · MongoDB</span>
+        <span class="tag">Stripe PromptPay</span>
+        <span class="tag">Gemini RAG</span>
+      </div>
     </div>
+    <div class="title-art"><img src="assets/custom-design.jpg" alt="ภาพวาดช่อดอกไม้ กุหลาบ ทานตะวัน ทิวลิป ห่อด้วยกระดาษคราฟท์"></div>
+  </div>
+</section>
 
-    <!-- SECTION 3: VISUAL BACKEND REQUEST ENGINE -->
-    <section id="backend-engine" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-xs mb-3">
-                <i class="fa-solid fa-microchip"></i>
-                <span>3D Request Execution Engine</span>
-            </div>
-            <h2 class="text-3xl font-heading font-bold text-slate-900">
-                Backend Request Engine
-            </h2>
-            <p class="text-slate-500 text-sm mt-2">
-                Simulating full request $\rightarrow$ response life-cycles across layered Express middleware, route handlers, Mongoose schemas, and MongoDB Atlas.
-            </p>
+<!-- ============ 00 TEAM ============ -->
+<section class="slide" id="team" data-nav="00 Team">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">00</span> Introduction</div>
+      <h2>Team McKraken <span class="draft">ร่าง · ทุกคนเช็คบทบาท</span></h2>
+      <p class="lead">5 คน · 3 sprint · 2 repo (frontend + backend) · ทุกคนทำ full-stack ใน feature ของตัวเอง</p>
+    </div>
+    <div class="grid g5">
+      <div class="card member">
+        <div class="avatar">JP</div>
+        <h3>Jittrin P.</h3>
+        <div class="role">Cart · Custom design · AI</div>
+        <ul>
+          <li>Cart + การคิดราคาที่ backend</li>
+          <li>Custom design (preset 1–5)</li>
+          <li>AI chatbot (RAG)</li>
+          <li>Admin Overview, Footer, Shop blog</li>
+        </ul>
+        <div class="me">ภูมิใจที่สุด: Ask AI จัดช่อตามงบ</div>
+      </div>
+      <div class="card member">
+        <div class="avatar">AP</div>
+        <h3>Albert Phonbut</h3>
+        <div class="role">Payment · Address · Review</div>
+        <ul>
+          <li>Login / Register / Forget password UI</li>
+          <li>Stripe PromptPay payment</li>
+          <li>Address, Review, Blog model</li>
+          <li>Cart page UI, AsideAdmin</li>
+        </ul>
+        <div class="me">ภูมิใจที่สุด: <span class="draft">TODO</span></div>
+      </div>
+      <div class="card member">
+        <div class="avatar">MR</div>
+        <h3>Maliwan Rodsomrit</h3>
+        <div class="role">Landing · Dashboard · Checkout</div>
+        <ul>
+          <li>Landing, Customer dashboard</li>
+          <li>Checkout, OrderConfirmed, OrderList</li>
+          <li>Product search, Blog CRUD</li>
+          <li>Presentation เวอร์ชันแรก</li>
+        </ul>
+        <div class="me">ภูมิใจที่สุด: <span class="draft">TODO</span></div>
+      </div>
+      <div class="card member">
+        <div class="avatar">วภ</div>
+        <h3>วิทวัส ภิระบรรณ์</h3>
+        <div class="role">Auth · Products</div>
+        <ul>
+          <li>Auth backend + frontend</li>
+          <li>JWT cookie + refresh token</li>
+          <li>Product CRUD</li>
+          <li>NavBar, Products page</li>
+        </ul>
+        <div class="me">ภูมิใจที่สุด: <span class="draft">TODO</span></div>
+      </div>
+      <div class="card member">
+        <div class="avatar">PN</div>
+        <h3>Poramet N.</h3>
+        <div class="role">Homepage · 3D · Admin</div>
+        <ul>
+          <li>Homepage</li>
+          <li>Custom product 3D preview</li>
+          <li>ProductEdit (admin), Inventory</li>
+          <li>Order model, CustomerAddress</li>
+        </ul>
+        <div class="me">ภูมิใจที่สุด: <span class="draft">TODO</span></div>
+      </div>
+    </div>
+    <aside class="notes"><b>Notes:</b> ช่วงนี้ 5 นาที แนะนำตัวคนละ ~1 นาที: ชื่อ, ทำส่วนไหน, feature ที่ภูมิใจ</aside>
+  </div>
+</section>
+
+<!-- ============ 01 CONCEPT ============ -->
+<section class="slide" id="concept" data-nav="01 Concept">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">01</span> Overview &amp; Concept</div>
+      <h2>ทำไมเลือกขายดอกไม้? <span class="draft">ร่าง · ทีมช่วยเขียน</span></h2>
+      <p class="lead">Atelier de Flora = ร้านดอกไม้ออนไลน์ ซื้อช่อสำเร็จรูป, ออกแบบช่อเอง และให้ AI ช่วยเลือก</p>
+    </div>
+    <div class="grid g4">
+      <div class="card">
+        <div class="icon"><i class="fa-solid fa-gift"></i></div>
+        <h3>ของขวัญต้องเป็นส่วนตัว</h3>
+        <p>ช่อดอกไม้มักซื้อให้คนสำคัญ ลูกค้าอยากเลือกเองว่าจะใส่ดอกอะไร กี่ดอก → <b>Custom design</b></p>
+      </div>
+      <div class="card">
+        <div class="icon"><i class="fa-solid fa-circle-question"></i></div>
+        <h3>คนส่วนใหญ่เลือกไม่เป็น</h3>
+        <p>ไม่รู้ว่าดอกไหนเหมาะกับโอกาสไหน หรือได้กี่ดอกในงบเท่านี้ → <b>Ask AI</b> ช่วยจัดช่อตามงบ</p>
+      </div>
+      <div class="card">
+        <div class="icon"><i class="fa-regular fa-calendar"></i></div>
+        <h3>มีโอกาสซื้อทั้งปี</h3>
+        <p>วันแม่, วาเลนไทน์, รับปริญญา, วันเกิด, แสดงความยินดี: ความต้องการต่อเนื่อง ไม่ใช่สินค้าตามฤดูกาลอย่างเดียว</p>
+      </div>
+      <div class="card">
+        <div class="icon"><i class="fa-solid fa-diagram-project"></i></div>
+        <h3>โจทย์เทคนิคที่น่าสนใจ</h3>
+        <p>ช่อ 1 ช่อ = วัตถุดิบหลายอย่าง (recipe + inventory) ราคาต้องคำนวณ ไม่ใช่สินค้าชิ้นเดียวธรรมดา</p>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:1em">
+      <div class="card soft">
+        <h3><i class="fa-solid fa-user" style="color:var(--primary)"></i>&nbsp; Customer</h3>
+        <p>ดู/ค้นหาสินค้า · ออกแบบช่อ · ตะกร้า + gift note · จ่าย PromptPay · dashboard (ที่อยู่, ช่อที่เซฟ, ประวัติ) · ถาม AI</p>
+      </div>
+      <div class="card soft">
+        <h3><i class="fa-solid fa-user-shield" style="color:var(--primary)"></i>&nbsp; Admin</h3>
+        <p>Overview ยอดขาย · จัดการสินค้า/วัตถุดิบ (CRUD) · รายการ order · จัดการ content · ปุ่ม Sync AI</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 FEATURES ============ -->
+<section class="slide" id="features" data-nav="02 Features">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">02</span> Features</div>
+      <h2>Feature ทั้งหมด</h2>
+      <p class="lead">กดที่การ์ดเพื่อดูเส้นทางข้อมูล: frontend → API → middleware → logic → collection</p>
+    </div>
+    <div class="filters" id="filters">
+      <button class="on" data-f="all">ทั้งหมด</button>
+      <button data-f="customer">Customer</button>
+      <button data-f="admin">Admin</button>
+      <button data-f="hl">★ Highlight</button>
+    </div>
+    <div class="grid g3" id="featureGrid"></div>
+  </div>
+</section>
+
+<!-- ============ 02 HIGHLIGHT: CUSTOM ============ -->
+<section class="slide" id="custom" data-nav="★ Custom">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">02</span> Highlight 1</div>
+      <h2>Custom Design: ออกแบบช่อเอง</h2>
+    </div>
+    <div class="split" style="align-items:start">
+      <div class="steps">
+        <div><div><b>เลือก base</b><p>กระดาษห่อ หรือแจกัน</p></div></div>
+        <div><div><b>เลือกดอกไม้ 3 ชนิด + จำนวน</b><p>ดึงรายการจาก <code>inventory_items</code> พร้อม preview 3D (<code>@google/model-viewer</code>)</p></div></div>
+        <div><div><b>Save เป็น preset 1–5</b><p>เก็บใน <code>users.saved_custom_designs</code> · preset ซ้ำตอบ <code>409 PRESET_TAKEN</code> แล้วถามว่าจะเซฟทับไหม</p></div></div>
+        <div><div><b>แก้ไขจาก dashboard</b><p>หน้า “ช่อที่เซฟ” → Edit เปิดหน้า Home ด้วย <code>/?edit=&lt;designId&gt;</code></p></div></div>
+        <div><div><b>Add to cart</b><p>ไม่สร้าง product ใหม่ เก็บเป็น <code>custom_specs</code> ในตะกร้า</p></div></div>
+      </div>
+      <div>
+        <div class="card">
+          <h3>ราคาคิดที่ backend <span class="muted small mono">utils/pricing.js</span></h3>
+          <div class="formula">
+            ช่อ custom = <b>Σ (cost_price × จำนวน)</b> × quantity<br>
+            สินค้าสำเร็จรูป = <b>base_price</b> × quantity<br>
+            + service fee <b>฿100</b> / ช่อ custom<br>
+            + delivery fee <b>฿10</b> / order<br>
+            = <b>total</b> (GET /cart ส่งมาให้ frontend แสดงอย่างเดียว)
+          </div>
+          <p class="small muted" style="margin-top:.7em">ใช้สูตรเดียวกันทั้งหน้าตะกร้าและ AI chatbot ตัวเลขเลยตรงกันทุกที่</p>
         </div>
-
-        <!-- 3D Perspective Isometric Layers Container -->
-        <div class="perspective-container py-8">
-            <div class="tilted-engine-layer max-w-4xl mx-auto space-y-4">
-                
-                <!-- Layer 1: Client Request -->
-                <div class="glass-card p-4 rounded-xl border border-cyan-300/80 flex items-center justify-between shadow-lg">
-                    <div class="flex items-center space-x-3 font-mono text-xs">
-                        <span class="w-3 h-3 rounded-full bg-cyan-500"></span>
-                        <span class="font-bold text-slate-900">1. CLIENT REQUEST</span>
-                        <span class="text-slate-400">Fetch API / React Hook</span>
-                    </div>
-                    <span class="font-mono text-[11px] text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded">HTTP POST / GET</span>
-                </div>
-
-                <!-- Layer 2: Express Server & Middleware -->
-                <div class="glass-card p-4 rounded-xl border border-indigo-300/80 flex items-center justify-between shadow-lg ml-4">
-                    <div class="flex items-center space-x-3 font-mono text-xs">
-                        <span class="w-3 h-3 rounded-full bg-indigo-500"></span>
-                        <span class="font-bold text-slate-900">2. EXPRESS MIDDLEWARE</span>
-                        <span class="text-slate-400">CORS • JSON Parser • authen.js</span>
-                    </div>
-                    <span class="font-mono text-[11px] text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">JWT Verification</span>
-                </div>
-
-                <!-- Layer 3: Router & Role Guard -->
-                <div class="glass-card p-4 rounded-xl border border-violet-300/80 flex items-center justify-between shadow-lg ml-8">
-                    <div class="flex items-center space-x-3 font-mono text-xs">
-                        <span class="w-3 h-3 rounded-full bg-violet-500"></span>
-                        <span class="font-bold text-slate-900">3. DOMAIN ROUTER</span>
-                        <span class="text-slate-400">/api/v1/*.routes.js • authorize("admin")</span>
-                    </div>
-                    <span class="font-mono text-[11px] text-violet-600 bg-violet-50 px-2 py-0.5 rounded">Role Guard</span>
-                </div>
-
-                <!-- Layer 4: Business Rules & Controller -->
-                <div class="glass-card p-4 rounded-xl border border-amber-300/80 flex items-center justify-between shadow-lg ml-12">
-                    <div class="flex items-center space-x-3 font-mono text-xs">
-                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-                        <span class="font-bold text-slate-900">4. CONTROLLER / SERVICE</span>
-                        <span class="text-slate-400">Stock Re-read • Price Validation • Bcrypt</span>
-                    </div>
-                    <span class="font-mono text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded">Business Rules</span>
-                </div>
-
-                <!-- Layer 5: Mongoose Model & MongoDB -->
-                <div class="glass-card p-4 rounded-xl border border-emerald-300/80 flex items-center justify-between shadow-lg ml-16">
-                    <div class="flex items-center space-x-3 font-mono text-xs">
-                        <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                        <span class="font-bold text-slate-900">5. MONGOOSE & MONGODB</span>
-                        <span class="text-slate-400">FlowerShop DB • BSON Queries</span>
-                    </div>
-                    <span class="font-mono text-[11px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Data Persistence</span>
-                </div>
-
-            </div>
+        <div class="card soft" style="margin-top:1em">
+          <p class="small"><i class="fa-solid fa-users" style="color:var(--primary)"></i>&nbsp; Jittrin (model / routes / frontend / preset) · Poramet (3D preview)</p>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- SECTION 4: AUTHENTICATION & AUTHORIZATION FLOW -->
-    <section id="auth-flow" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-violet-50 border border-violet-200 text-violet-700 font-mono text-xs mb-3">
-                <i class="fa-solid fa-lock"></i>
-                <span>Security & Authorization Blueprint</span>
-            </div>
-            <h2 class="text-3xl font-heading font-bold text-slate-900">
-                JWT Cookie & Role-Based Authorization
-            </h2>
-            <p class="text-slate-500 text-sm mt-2">
-                Strict security contract isolating Customer and Admin privilege boundaries.
-            </p>
+<!-- ============ 02 HIGHLIGHT: AI ============ -->
+<section class="slide" id="ai" data-nav="★ Ask AI">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">02</span> Highlight 2</div>
+      <h2>Ask AI: ผู้ช่วยจัดช่อ (RAG)</h2>
+      <p class="lead">AI ตอบจากข้อมูลจริงของร้าน ไม่เดาราคาเอง และรู้จักตะกร้า/ช่อที่เซฟของคนที่ถาม</p>
+    </div>
+    <div class="flow">
+      <div class="step"><i class="fa-regular fa-comment"></i><b>คำถาม</b><span>POST /ai/ask + history 6 ข้อความ</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-wave-square"></i><b>Embedding</b><span>gemini-embedding-001 (3072 มิติ)</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-magnifying-glass"></i><b>$vectorSearch</b><span>ai_knowledge → สินค้า 4 + วัตถุดิบ 6</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-database"></i><b>ข้อมูลสด</b><span>ราคาจาก DB + pricing.js + ตะกร้า/ช่อของ user (จาก token)</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-wand-magic-sparkles"></i><b>Gemini ตอบ</b><span>จัดช่อ/มีงบ → flash · อื่นๆ → flash-lite</span></div>
+    </div>
+    <div class="grid g2" style="margin-top:1.2em; align-items:start">
+      <div class="card">
+        <h3>ตัวอย่างบทสนทนา</h3>
+        <div class="chat">
+          <div class="bubble q">ช่วยจัดช่อ custom ให้แม่ งบ 800</div>
+          <div class="bubble a">แนะนำกระดาษห่อ + กุหลาบชมพู 5 + คาร์เนชั่น 3 + ยิปโซ 2 … พร้อมวิธีคิด: วัตถุดิบ ฿xxx + service fee ฿100 + ค่าส่ง ฿10 = ไม่เกินงบ</div>
+          <div class="bubble q">ตะกร้าของฉันรวมเท่าไหร่</div>
         </div>
+      </div>
+      <div class="card">
+        <h3>ความปลอดภัย &amp; ความแม่น</h3>
+        <ul>
+          <li>ข้อมูลส่วนตัว <b>ไม่ถูก embed</b> ดึงตาม token เท่านั้น → ถามข้อมูลคนอื่นไม่ได้ (ทดสอบ prompt injection แล้ว)</li>
+          <li>ต้อง login + rate limit 10 ครั้ง/นาที/คน</li>
+          <li>แอดมินกด <b>Sync AI</b> หลังแก้สินค้า → อัปเดตเฉพาะตัวที่เปลี่ยน</li>
+          <li>model ใหญ่ล่ม → fallback ไป flash-lite</li>
+        </ul>
+      </div>
+    </div>
+    <aside class="notes"><b>Notes:</b> ตัวเลขในบับเบิลเป็นตัวอย่าง ให้ demo ของจริงในสไลด์ถัดไป · อย่าเทส AI รัวๆ วันพรีเซนต์ (quota Gemini reset 14:00)</aside>
+  </div>
+</section>
 
-        <div class="glass-card rounded-3xl p-8 border border-slate-200">
-            <div class="grid grid-cols-1 lg:grid-cols-7 gap-4 items-center font-mono text-xs text-center">
-                
-                <!-- Step 1 -->
-                <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                    <i class="fa-solid fa-user-lock text-2xl text-slate-700 mb-2"></i>
-                    <span class="block font-bold">1. USER LOGIN</span>
-                    <span class="text-[10px] text-slate-400">POST /auth/login</span>
-                </div>
+<!-- ============ 02 LIVE DEMO ============ -->
+<section class="slide" id="demo" data-nav="Demo">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">02</span> Live Demo</div>
+      <h2>Demo: จากออกแบบช่อ ถึงจ่ายเงิน</h2>
+    </div>
+    <div class="grid g4">
+      <div class="card"><div class="icon"><i class="fa-solid fa-palette"></i></div><h3>1 · Custom</h3><p>Login → Home → ออกแบบช่อ → Save preset → Add to cart</p></div>
+      <div class="card"><div class="icon"><i class="fa-solid fa-robot"></i></div><h3>2 · Ask AI</h3><p>“ช่วยจัดช่อ custom ให้แม่ งบ 800” → ชี้วิธีคิดราคา</p></div>
+      <div class="card"><div class="icon"><i class="fa-solid fa-cart-shopping"></i></div><h3>3 · Cart</h3><p>“ตะกร้าของฉันรวมเท่าไหร่” → เทียบกับหน้า Cart</p></div>
+      <div class="card"><div class="icon"><i class="fa-solid fa-qrcode"></i></div><h3>4 · Checkout</h3><p>Checkout → QR PromptPay (Stripe test mode)</p></div>
+    </div>
+    <div style="margin-top:1.6em; display:flex; gap:.6em; flex-wrap:wrap">
+      <a class="btn solid" href="https://jsd-13-group-project2-mc-kraken-spr.vercel.app/" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดเว็บจริง</a>
+      <span class="tag">ผู้พูด: <span class="draft">TODO</span></span>
+    </div>
+    <aside class="notes"><b>ก่อน demo:</b> เปิดเว็บ + backend Render ให้ตื่นก่อน 5 นาที · login ใหม่ก่อนเริ่ม (refresh token บน production ยังหลุดหลัง 15 นาที) · เตรียมวิดีโอสำรอง · ~4 นาที</aside>
+  </div>
+</section>
 
-                <div class="hidden lg:block text-slate-300"><i class="fa-solid fa-arrow-right"></i></div>
-
-                <!-- Step 2 -->
-                <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                    <i class="fa-solid fa-key text-2xl text-amber-500 mb-2"></i>
-                    <span class="block font-bold">2. BCRYPT CHECK</span>
-                    <span class="text-[10px] text-slate-400">Password Match</span>
-                </div>
-
-                <div class="hidden lg:block text-slate-300"><i class="fa-solid fa-arrow-right"></i></div>
-
-                <!-- Step 3 -->
-                <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                    <i class="fa-solid fa-cookie-bite text-2xl text-cyan-600 mb-2"></i>
-                    <span class="block font-bold">3. JWT COOKIE</span>
-                    <span class="text-[10px] text-slate-400">httpOnly Token</span>
-                </div>
-
-                <div class="hidden lg:block text-slate-300"><i class="fa-solid fa-arrow-right"></i></div>
-
-                <!-- Step 4 -->
-                <div class="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                    <i class="fa-solid fa-shield-halved text-2xl text-emerald-500 mb-2"></i>
-                    <span class="block font-bold">4. AUTHEN</span>
-                    <span class="text-[10px] text-slate-400">Sets req.user</span>
-                </div>
-
-            </div>
-
-            <!-- Branching Role Decision -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-8 border-t border-slate-100">
-                <!-- Customer Access -->
-                <div class="p-5 rounded-2xl bg-cyan-50/50 border border-cyan-200/80">
-                    <div class="flex items-center space-x-2 text-cyan-800 font-heading font-bold mb-2">
-                        <i class="fa-solid fa-user-check"></i>
-                        <span>ROLE: CUSTOMER</span>
-                    </div>
-                    <ul class="space-y-1.5 font-mono text-xs text-slate-600">
-                        <li>• Access Personal Cart & Address Book</li>
-                        <li>• Place Orders & View Order History</li>
-                        <li>• Access Profile Settings</li>
-                    </ul>
-                </div>
-
-                <!-- Admin Access -->
-                <div class="p-5 rounded-2xl bg-purple-50/50 border border-purple-200/80">
-                    <div class="flex items-center space-x-2 text-purple-800 font-heading font-bold mb-2">
-                        <i class="fa-solid fa-user-shield"></i>
-                        <span>ROLE: ADMIN (`authorize("admin")`)</span>
-                    </div>
-                    <ul class="space-y-1.5 font-mono text-xs text-slate-600">
-                        <li>• Full Product Inventory Mutation (CRUD)</li>
-                        <li>• Modify Order Delivery Statuses</li>
-                        <li>• Edit Blog & System Content Articles</li>
-                    </ul>
-                </div>
-            </div>
+<!-- ============ 03 TECH ============ -->
+<section class="slide" id="tech" data-nav="03 Tech">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">03</span> Tech Stack</div>
+      <h2>สถาปัตยกรรมระบบ</h2>
+    </div>
+    <div class="arch">
+      <div class="box"><i class="fa-brands fa-react"></i><b>Frontend</b><span>React 19 + Vite<br>Vercel</span></div>
+      <div class="link"><i class="fa-solid fa-arrow-right-long"></i>REST /api/v1<br>+ httpOnly cookie</div>
+      <div class="box"><i class="fa-brands fa-node-js"></i><b>Backend</b><span>Express 5 + Mongoose 9<br>Render</span></div>
+      <div class="link"><i class="fa-solid fa-arrow-right-long"></i></div>
+      <div class="stack">
+        <div class="box"><i class="fa-solid fa-leaf"></i><div><b>MongoDB Atlas</b><span>DB FlowerShop + Vector Search</span></div></div>
+        <div class="box"><i class="fa-brands fa-stripe-s"></i><div><b>Stripe</b><span>PromptPay QR</span></div></div>
+        <div class="box"><i class="fa-solid fa-wand-magic-sparkles"></i><div><b>Google Gemini</b><span>embedding + flash / flash-lite</span></div></div>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:1.4em; align-items:start">
+      <div class="card">
+        <table class="stack-table">
+          <tr><td>Frontend</td><td><div class="chips"><span class="chip">React 19</span><span class="chip">Vite</span><span class="chip">Tailwind v4</span><span class="chip">shadcn/ui</span><span class="chip">React Router v7</span><span class="chip">axios</span><span class="chip">react-hook-form + zod</span><span class="chip">recharts</span><span class="chip">model-viewer (3D)</span></div></td></tr>
+          <tr><td>Backend</td><td><div class="chips"><span class="chip">Node.js</span><span class="chip">Express 5</span><span class="chip">Mongoose 9</span><span class="chip">jsonwebtoken</span><span class="chip">cookie-parser</span><span class="chip">bcrypt</span></div></td></tr>
+          <tr><td>Tools</td><td><div class="chips"><span class="chip">Git / GitHub</span><span class="chip">Miro</span><span class="chip">Figma</span><span class="chip">Claude Code</span></div></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>1 request ผ่านอะไรบ้าง</h3>
+        <div class="flow" style="margin-top:.6em">
+          <div class="step"><b>CORS</b><span>credentials</span></div>
+          <div class="step"><b>authen</b><span>ตรวจ JWT</span></div>
+          <div class="step"><b>authorize</b><span>ตรวจ role</span></div>
+          <div class="step"><b>route</b><span>logic / pricing</span></div>
+          <div class="step"><b>Mongoose</b><span>Atlas</span></div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- SECTION 5: MONGODB SCHEMA RELATIONSHIPS -->
-    <section id="mongodb-schema" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700 font-mono text-xs mb-3">
-                <i class="fa-solid fa-sitemap"></i>
-                <span>Database Entity Mapping</span>
-            </div>
-            <h2 class="text-3xl font-heading font-bold text-slate-900">
-                MongoDB Relationship Graph
-            </h2>
-            <p class="text-slate-500 text-sm mt-2">
-                Document collections inside the <code class="font-mono text-slate-800">FlowerShop</code> database.
-            </p>
+<!-- ============ 04 DATA: ER ============ -->
+<section class="slide" id="data" data-nav="04 Data">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">04</span> Data Route</div>
+      <h2>ออกแบบข้อมูล (MongoDB)</h2>
+    </div>
+    <div class="split" style="grid-template-columns: 1.5fr 1fr; align-items:start">
+      <div>
+        <div class="er" data-zoom="assets/er-diagram.png"><img src="assets/er-diagram.png" alt="ER diagram ของ Flower Shop: users, products, inventory_items, carts, orders, reviews, content"></div>
+        <p class="er-cap"><i class="fa-solid fa-magnifying-glass-plus"></i> กดที่รูปเพื่อขยาย</p>
+      </div>
+      <div>
+        <div class="card">
+          <h3>Design rules</h3>
+          <div class="rules">
+            <div><b>1</b><span>ทุกอย่างที่ขายได้ = <b>product</b> (ดอกเดี่ยว = product ที่มีวัตถุดิบ 1 รายการ)</span></div>
+            <div><b>2</b><span><b>order = snapshot</b> เก็บชื่อ/ราคา ณ ตอนสั่ง ไม่อ้างราคาปัจจุบันย้อนหลัง</span></div>
+            <div><b>3</b><span>ช่อ custom <b>ไม่สร้าง product ใหม่</b> เก็บสูตรใน <code>custom_specs</code></span></div>
+            <div><b>4</b><span><b>inventory</b> = วัตถุดิบภายในร้าน (cost_price)</span></div>
+          </div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
-            <!-- Schema 1: users -->
-            <div class="glass-card p-5 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="font-bold text-slate-900">users</span>
-                    <i class="fa-solid fa-users text-cyan-600"></i>
-                </div>
-                <div class="text-[11px] text-slate-500 space-y-1">
-                    <p>• _id: ObjectId</p>
-                    <p>• email: String (unique)</p>
-                    <p>• password_hash: String</p>
-                    <p>• role: "admin" | "customer"</p>
-                    <p>• shipping_addresses: [Subdoc]</p>
-                </div>
-            </div>
-
-            <!-- Schema 2: products -->
-            <div class="glass-card p-5 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="font-bold text-slate-900">products</span>
-                    <i class="fa-solid fa-seedling text-emerald-600"></i>
-                </div>
-                <div class="text-[11px] text-slate-500 space-y-1">
-                    <p>• _id: ObjectId</p>
-                    <p>• name, base_price: Number</p>
-                    <p>• components: [{ inv_id, qty }]</p>
-                    <p>• is_active, is_popular: Boolean</p>
-                </div>
-            </div>
-
-            <!-- Schema 3: inventory_items -->
-            <div class="glass-card p-5 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="font-bold text-slate-900">inventory_items</span>
-                    <i class="fa-solid fa-boxes-packing text-amber-600"></i>
-                </div>
-                <div class="text-[11px] text-slate-500 space-y-1">
-                    <p>• _id: ObjectId</p>
-                    <p>• name: String</p>
-                    <p>• category: flower | vase</p>
-                    <p>• stock_quantity: Number</p>
-                </div>
-            </div>
-
-            <!-- Schema 4: carts -->
-            <div class="glass-card p-5 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="font-bold text-slate-900">carts</span>
-                    <i class="fa-solid fa-cart-flatbed text-blue-600"></i>
-                </div>
-                <div class="text-[11px] text-slate-500 space-y-1">
-                    <p>• user_id $\rightarrow$ Ref User</p>
-                    <p>• items: [{ product_id, qty }]</p>
-                    <p>• custom_specs: Object</p>
-                </div>
-            </div>
-
-            <!-- Schema 5: orders -->
-            <div class="glass-card p-5 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="font-bold text-slate-900">orders</span>
-                    <i class="fa-solid fa-file-invoice text-indigo-600"></i>
-                </div>
-                <div class="text-[11px] text-slate-500 space-y-1">
-                    <p>• user_id $\rightarrow$ Ref User</p>
-                    <p>• items_snapshot: Array</p>
-                    <p>• grand_total: Number</p>
-                    <p>• order_status: String</p>
-                </div>
-            </div>
-
-            <!-- Schema 6: blog -->
-            <div class="glass-card p-5 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="font-bold text-slate-900">blog</span>
-                    <i class="fa-solid fa-newspaper text-teal-600"></i>
-                </div>
-                <div class="text-[11px] text-slate-500 space-y-1">
-                    <p>• _id: String (shb01...)</p>
-                    <p>• title, content: String</p>
-                    <p>• category, status: String</p>
-                    <p>• published_at: Date</p>
-                </div>
-            </div>
-
-            <!-- Schema 7: reviews -->
-            <div class="glass-card p-5 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="font-bold text-slate-900">reviews</span>
-                    <i class="fa-solid fa-star text-yellow-500"></i>
-                </div>
-                <div class="text-[11px] text-slate-500 space-y-1">
-                    <p>• user_id $\rightarrow$ Ref User</p>
-                    <p>• product_id $\rightarrow$ Ref Product</p>
-                    <p>• rating: Number (1-5)</p>
-                </div>
-            </div>
-
-            <!-- Schema 8: custom_designs -->
-            <div class="glass-card p-5 rounded-2xl border border-slate-200">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="font-bold text-slate-900">custom_designs</span>
-                    <i class="fa-solid fa-wand-magic-sparkles text-violet-600"></i>
-                </div>
-                <div class="text-[11px] text-slate-500 space-y-1">
-                    <p>• user_id $\rightarrow$ Ref User</p>
-                    <p>• custom_components: Array</p>
-                    <p>• total_calculated_price</p>
-                </div>
-            </div>
+        <div class="card soft" style="margin-top:1em">
+          <h3>Collections</h3>
+          <div class="chips" style="margin-top:.4em">
+            <span class="chip">users<small class="muted"> + addresses, saved designs</small></span>
+            <span class="chip">products</span><span class="chip">inventory_items</span><span class="chip">carts</span>
+            <span class="chip">orders</span><span class="chip">blog</span><span class="chip">reviews</span><span class="chip">ai_knowledge</span>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- SECTION 6: TEAM SPRINT TASK MATRIX -->
-    <section id="sprint-kanban" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-mono text-xs mb-3">
-                <i class="fa-solid fa-list-check"></i>
-                <span>Team Execution Matrix</span>
-            </div>
-            <h2 class="text-3xl font-heading font-bold text-slate-900">
-                Sprint Deliverables Matrix
-            </h2>
-            <p class="text-slate-500 text-sm mt-2">
-                All Sprint 2 and Sprint 3 tasks fully resolved for Final Presentation.
-            </p>
+<!-- ============ 04 DATA: API ============ -->
+<section class="slide" id="api" data-nav="04 API">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">04</span> Data Route</div>
+      <h2>REST API <span class="mono muted" style="font-size:.5em">/api/v1</span></h2>
+    </div>
+    <div class="legend"><span>🔓 public</span><span>🔑 ต้อง login</span><span>👑 admin</span></div>
+    <div class="api-list">
+      <div class="card"><div class="path">/auth</div><p>🔓 register · login · refresh · forget/reset<br>🔑 me · logout · edit-password</p></div>
+      <div class="card"><div class="path">/products</div><p>🔓 GET (search, type, popular, tag)<br>👑 POST · PUT · DELETE</p></div>
+      <div class="card"><div class="path">/cart</div><p>🔑 GET (พร้อมราคาจาก backend) · POST · PATCH · DELETE</p></div>
+      <div class="card"><div class="path">/custom-design</div><p>🔑 CRUD ช่อที่เซฟ (preset 1–5)</p></div>
+      <div class="card"><div class="path">/user/address</div><p>🔑 CRUD ที่อยู่จัดส่ง</p></div>
+      <div class="card"><div class="path">/payments</div><p>create-intent (PromptPay QR) · poll status</p></div>
+      <div class="card"><div class="path">/blog · /review</div><p>🔓 บทความ · รีวิวลูกค้า</p></div>
+      <div class="card"><div class="path">/ai</div><p>🔑 ask (rate limit) · 👑 sync</p></div>
+      <div class="card soft"><div class="path">userId มาจาก token</div><p>ไม่รับจาก URL / body → ดูได้แค่ข้อมูลของตัวเอง</p></div>
+    </div>
+    <div class="card" style="margin-top:1em">
+      <h3>ตัวอย่างเส้นทางข้อมูล: ซื้อช่อ 1 ช่อ</h3>
+      <div class="flow" style="margin-top:.6em">
+        <div class="step"><b>POST /cart</b><span>product_id หรือ custom_specs</span></div>
+        <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="step"><b>GET /cart</b><span>backend คิดราคา (pricing.js)</span></div>
+        <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="step"><b>Checkout</b><span>เลือกที่อยู่ + สรุปยอด</span></div>
+        <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="step"><b>Stripe</b><span>PromptPay QR → succeeded</span></div>
+        <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+        <div class="step"><b>Order</b><span>snapshot ราคา <span class="tag">กำลังทำ</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 AUTH ============ -->
+<section class="slide" id="auth" data-nav="05 Auth">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">05</span> Authentication</div>
+      <h2>JWT ใน httpOnly cookie</h2>
+    </div>
+    <div class="flow">
+      <div class="step"><i class="fa-solid fa-user-plus"></i><b>Register</b><span>bcrypt hash password</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-right-to-bracket"></i><b>Login</b><span>ตรวจรหัส → ออก JWT 2 ใบ</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-cookie-bite"></i><b>httpOnly cookie</b><span>browser แนบให้เองทุก request</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-shield-halved"></i><b>authen</b><span>req.user = { userId, role }</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-user-shield"></i><b>authorize(["admin"])</b><span>เฉพาะ route ของแอดมิน</span></div>
+    </div>
+    <div class="grid g3" style="margin-top:1.2em">
+      <div class="card">
+        <div class="icon"><i class="fa-solid fa-key"></i></div>
+        <h3>2 tokens</h3>
+        <p><b>accessToken</b> 15 นาที <code>{ userId, role }</code><br><b>refreshToken</b> 7 วัน เก็บใน DB ด้วย → logout แล้วใช้ต่อไม่ได้</p>
+      </div>
+      <div class="card">
+        <div class="icon"><i class="fa-solid fa-rotate"></i></div>
+        <h3>Refresh อัตโนมัติ</h3>
+        <p>accessToken หมดอายุ → axios interceptor เรียก <code>/auth/refresh</code> ให้เอง ผู้ใช้ไม่ต้อง login ใหม่ · เปิดเว็บเช็ค <code>GET /auth/me</code></p>
+      </div>
+      <div class="card">
+        <div class="icon"><i class="fa-solid fa-lock"></i></div>
+        <h3>ทำไมใช้ httpOnly</h3>
+        <p>JavaScript ในหน้าเว็บอ่าน token ไม่ได้ ลดความเสี่ยง XSS · บัญชี suspended login ไม่ได้ (403)</p>
+      </div>
+    </div>
+    <p class="small muted" style="margin-top:1em">Forget / reset password: ตอนนี้ใช้รหัสยืนยันจำลอง ยังไม่ส่งอีเมลจริง <span class="draft">วิทวัสเช็ค</span></p>
+    <aside class="notes"><b>Notes:</b> ถ้าถูกถาม: refresh token บน production ยังตั้ง <code>sameSite: "strict"</code> ข้ามโดเมน Vercel → Render ไม่ได้ กำลังแก้เป็น <code>"none"</code></aside>
+  </div>
+</section>
+
+<!-- ============ 06 PROCESS ============ -->
+<section class="slide" id="process" data-nav="06 Process">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">06</span> Working Process</div>
+      <h2>ทำงานเป็นทีมอย่างไร</h2>
+    </div>
+    <div class="timeline">
+      <div class="card"><span class="tag">Sprint 1</span><h3 style="margin-top:.5em">Plan &amp; Design</h3><p>วาง concept, ER diagram, ออกแบบ UI + design system บน Figma <span class="draft">เช็ค</span></p></div>
+      <div class="card"><span class="tag">Sprint 2</span><h3 style="margin-top:.5em">UI / Pages</h3><p>สร้างหน้าและ component ด้วย mock data</p></div>
+      <div class="card"><span class="tag">Sprint 3</span><h3 style="margin-top:.5em">Backend &amp; Integration</h3><p>models + routes, ต่อ API จริง, payment, AI chatbot, deploy</p></div>
+    </div>
+    <div class="grid g2" style="margin-top:1em; align-items:start">
+      <div class="card">
+        <h3><i class="fa-solid fa-table-columns" style="color:var(--primary)"></i>&nbsp; Miro kanban</h3>
+        <div class="kanban" style="margin:.7em 0"><span>Backlog</span><span>To Do</span><span>In Progress</span><span>Code Review</span><span>Testing</span><span>Done</span></div>
+        <p class="small muted">ทุกการ์ดมี assignee + วันที่ · แบ่งงานตาม feature (ทำครบ model → route → หน้าเว็บ)</p>
+      </div>
+      <div class="card">
+        <h3><i class="fa-solid fa-code-branch" style="color:var(--primary)"></i>&nbsp; Git flow</h3>
+        <div class="flow" style="margin:.7em 0">
+          <div class="step"><b>branch</b><span>1 feature</span></div>
+          <div class="step"><b>PR</b><span>อธิบายสิ่งที่แก้</span></div>
+          <div class="step"><b>review</b><span>เพื่อนตรวจ</span></div>
+          <div class="step"><b>merge</b><span>main → deploy</span></div>
         </div>
+        <p class="small muted">frontend 73+ PRs · backend 27+ PRs</p>
+      </div>
+    </div>
+    <p class="small muted" style="margin-top:1em"><i class="fa-regular fa-comments"></i> การสื่อสาร: <span class="draft">TODO ช่องทาง / ประชุมบ่อยแค่ไหน / daily stand-up?</span></p>
+  </div>
+</section>
 
-        <!-- Sprint Matrix Board -->
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 font-mono text-xs">
-            <!-- Team Member 1 -->
-            <div class="glass-card p-4 rounded-2xl border border-slate-200">
-                <div class="pb-3 border-b border-slate-200 mb-3">
-                    <span class="font-bold text-slate-900 block text-sm">Maliwan R.</span>
-                    <span class="text-[10px] text-slate-400">Frontend & API</span>
-                </div>
-                <div class="space-y-2 text-[11px]">
-                    <div class="p-2 rounded bg-white border border-slate-200">LandingPage / CustomerAccount</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">OrderList / OrderConfirmed</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">routes-product [search]</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">routes-blog [CRUD]</div>
-                </div>
-            </div>
+<!-- ============ 07 PROBLEM ============ -->
+<section class="slide" id="problems" data-nav="07 Problems">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">07</span> Problem &amp; Solution</div>
+      <h2>ปัญหาที่เจอ และวิธีแก้ <span class="draft">ทุกคนเพิ่มของตัวเอง</span></h2>
+    </div>
+    <div class="grid g3">
+      <div class="card problem">
+        <div class="p"><i class="fa-solid fa-circle-exclamation"></i> ราคา</div>
+        <h3>คิดราคาที่ frontend → ปลอมได้ / ตัวเลขไม่ตรงกัน</h3>
+        <div class="s"><i class="fa-solid fa-check"></i><span>ให้ backend คิด (<code>pricing.js</code>) แล้วส่งยอดมาใน GET /cart · order เก็บ snapshot</span></div>
+        <div class="by">base</div>
+      </div>
+      <div class="card problem">
+        <div class="p"><i class="fa-solid fa-circle-exclamation"></i> Security</div>
+        <h3>ส่ง userId ใน URL → แก้ URL ดูข้อมูลคนอื่นได้</h3>
+        <div class="s"><i class="fa-solid fa-check"></i><span>เอา userId จาก JWT (<code>req.user.userId</code>) แทน</span></div>
+        <div class="by">ทีม</div>
+      </div>
+      <div class="card problem">
+        <div class="p"><i class="fa-solid fa-circle-exclamation"></i> Auth</div>
+        <h3>token หมดใน 15 นาที request ที่ใช้ fetch พัง</h3>
+        <div class="s"><i class="fa-solid fa-check"></i><span>เปลี่ยนไปใช้ axios instance ที่มี interceptor refresh token</span></div>
+        <div class="by">ทีม</div>
+      </div>
+      <div class="card problem">
+        <div class="p"><i class="fa-solid fa-circle-exclamation"></i> Data</div>
+        <h3>seed ใหม่ แล้ว <code>_id</code> เปลี่ยน → id ที่ hardcode และ AI หาสินค้าไม่เจอ</h3>
+        <div class="s"><i class="fa-solid fa-check"></i><span>ดึงจาก API แทนการ hardcode + ปุ่ม Sync AI</span></div>
+        <div class="by">base / Poramet</div>
+      </div>
+      <div class="card problem">
+        <div class="p"><i class="fa-solid fa-circle-exclamation"></i> AI</div>
+        <h3>AI (flash-lite) จัดช่อเกินงบ คิดเลขผิด</h3>
+        <div class="s"><i class="fa-solid fa-check"></i><span>บังคับแสดงวิธีคิด + ใช้ model ใหญ่เฉพาะคำถามจัดช่อ + fallback</span></div>
+        <div class="by">base</div>
+      </div>
+      <div class="card problem">
+        <div class="p"><i class="fa-solid fa-circle-exclamation"></i> Teamwork</div>
+        <h3>merge conflict ที่ไฟล์กลาง (Layout, routes/index)</h3>
+        <div class="s"><i class="fa-solid fa-check"></i><span>แยก component, แตะไฟล์กลางให้น้อยที่สุด, แจ้งใน PR</span></div>
+        <div class="by">ทีม</div>
+      </div>
+    </div>
+    <div class="next">
+      <b class="muted">สิ่งที่จะทำต่อ:</b>
+      <span class="tag">Order API</span>
+      <span class="tag">คิดยอด payment จากตะกร้าที่ backend</span>
+      <span class="tag">Blog admin auth</span>
+      <span class="tag">Route guard หน้า dashboard</span>
+      <span class="tag">ส่งอีเมล reset password จริง</span>
+    </div>
+  </div>
+</section>
 
-            <!-- Team Member 2 -->
-            <div class="glass-card p-4 rounded-2xl border border-slate-200">
-                <div class="pb-3 border-b border-slate-200 mb-3">
-                    <span class="font-bold text-slate-900 block text-sm">Poramet N.</span>
-                    <span class="text-[10px] text-slate-400">UI & Components</span>
-                </div>
-                <div class="space-y-2 text-[11px]">
-                    <div class="p-2 rounded bg-white border border-slate-200">Homepage / ProductEdit</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">CustomerAddress</div>
-                </div>
-            </div>
+<!-- ============ 08 BSM ============ -->
+<section class="slide" id="bsm" data-nav="08 BSM">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">08</span> BSM</div>
+      <h2>Behavior · Skill · Mindset <span class="draft">ร่าง · ทุกคนเลือก 1 ตัวอย่าง</span></h2>
+      <p class="lead">สิ่งที่ได้ฝึกจริงระหว่างทำโปรเจกต์ <a href="#" data-zoom="assets/bsm.png" class="small">ดูกรอบ BSM ของคลาส</a></p>
+    </div>
+    <div class="grid g3" style="align-items:start">
+      <div class="card bsm-col">
+        <h3><i class="fa-solid fa-seedling" style="color:var(--primary)"></i> Mindsets</h3>
+        <div class="item"><b>Growth Mindset</b>เรียน RAG / vector search / Gemini API ที่ไม่ได้อยู่ในหลักสูตร แล้วนำมาใช้จริง</div>
+        <div class="item"><b>Persistence</b>ไล่แก้ปัญหา cookie ข้ามโดเมน และ token หมดอายุจนระบบ login ใช้ได้</div>
+        <div class="item"><b>Personal Responsibility</b>เจ้าของ feature ดูแลครบตั้งแต่ model → route → หน้าเว็บ</div>
+      </div>
+      <div class="card bsm-col">
+        <h3><i class="fa-solid fa-people-group" style="color:var(--primary)"></i> Behavioral skills</h3>
+        <div class="item"><b>Teamwork</b>ทุก PR มีเพื่อน review ก่อน merge</div>
+        <div class="item"><b>Communication</b>แจ้งในทีมก่อนแก้ไฟล์ของเพื่อน · ตกลงชื่อ field ใน schema ร่วมกัน</div>
+        <div class="item"><b>Time Management</b>แบ่ง sprint และติดตามงานบน Miro kanban</div>
+        <div class="item"><b>Orientation to details</b>ตรวจให้ราคาหน้าเว็บ, ตะกร้า และ AI ตรงกันทุกที่</div>
+      </div>
+      <div class="card bsm-col">
+        <h3><i class="fa-solid fa-code" style="color:var(--primary)"></i> Technical skills</h3>
+        <div class="item"><b>JavaScript · React</b>React 19, Context, React Router, form validation</div>
+        <div class="item"><b>Node · Express · MongoDB</b>REST API, middleware, Mongoose schema, Atlas</div>
+        <div class="item"><b>AI Session</b>ใช้ AI ช่วยเขียนโค้ด และสร้าง AI feature ในเว็บเอง</div>
+        <div class="item"><b>Final Project</b>deploy จริงบน Vercel + Render</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-            <!-- Team Member 3 -->
-            <div class="glass-card p-4 rounded-2xl border border-slate-200">
-                <div class="pb-3 border-b border-slate-200 mb-3">
-                    <span class="font-bold text-slate-900 block text-sm">Albert Phonbut</span>
-                    <span class="text-[10px] text-slate-400">Auth & Cart</span>
-                </div>
-                <div class="space-y-2 text-[11px]">
-                    <div class="p-2 rounded bg-white border border-slate-200">LoginPage / Cart Page</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">RenewPassword / ForgetPassword</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">models-address / routes-address</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">models-review / routes-review</div>
-                </div>
-            </div>
+<!-- ============ CLOSING ============ -->
+<section class="slide closing" id="thanks" data-nav="Q&amp;A">
+  <div class="slide-inner">
+    <div class="eyebrow" style="justify-content:center">Team McKraken</div>
+    <h2 style="margin-top:.3em">Thank you</h2>
+    <p class="muted" style="font-size:1.2em; margin-top:.5em">Questions &amp; Feedback</p>
+    <div class="links">
+      <a class="btn solid" href="https://jsd-13-group-project2-mc-kraken-spr.vercel.app/" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> Live Web</a>
+      <a class="btn" href="https://github.com/JittrinP/JSD13_Group_Project2_McKraken_sprint2" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Frontend repo</a>
+      <a class="btn" href="https://github.com/JittrinP/McKraken_sprint3_Backend" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Backend repo</a>
+      <a class="btn" href="https://miro.com/app/board/uXjVHuvGF_0=/" target="_blank" rel="noopener"><i class="fa-solid fa-chalkboard"></i> Miro board</a>
+    </div>
+    <p class="small muted" style="margin-top:2.5em">Jittrin P. · Albert Phonbut · Maliwan Rodsomrit · วิทวัส ภิระบรรณ์ · Poramet N.<br>Presentation เวอร์ชันแรกโดย Maliwan R.</p>
+  </div>
+</section>
 
-            <!-- Team Member 4 -->
-            <div class="glass-card p-4 rounded-2xl border border-slate-200">
-                <div class="pb-3 border-b border-slate-200 mb-3">
-                    <span class="font-bold text-slate-900 block text-sm">Whittawat P.</span>
-                    <span class="text-[10px] text-slate-400">Auth & Components</span>
-                </div>
-                <div class="space-y-2 text-[11px]">
-                    <div class="p-2 rounded bg-white border border-slate-200">NavBar / Products Page</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">PurchasesItems / PopProducts</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">model-auth / authen middleware</div>
-                </div>
-            </div>
+</main>
 
-            <!-- Team Member 5 -->
-            <div class="glass-card p-4 rounded-2xl border border-slate-200">
-                <div class="pb-3 border-b border-slate-200 mb-3">
-                    <span class="font-bold text-slate-900 block text-sm">Jittrin P.</span>
-                    <span class="text-[10px] text-slate-400">Dashboard & Cart Routes</span>
-                </div>
-                <div class="space-y-2 text-[11px]">
-                    <div class="p-2 rounded bg-white border border-slate-200">AdminDashboard / Overview</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">PopShopblog / Footer</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">models-carts / routes-carts</div>
-                    <div class="p-2 rounded bg-white border border-slate-200">models-custom-design</div>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="deckbar">
+  <button id="prevBtn" aria-label="สไลด์ก่อนหน้า"><i class="fa-solid fa-chevron-left"></i></button>
+  <span class="count" id="count">1 / 1</span>
+  <button id="nextBtn" aria-label="สไลด์ถัดไป"><i class="fa-solid fa-chevron-right"></i></button>
+  <span class="hint">← → เปลี่ยนสไลด์ · M โหมด · F เต็มจอ · N โน้ต · D ซ่อนป้ายร่าง</span>
+</div>
 
-    <!-- SECTION 7: PROBLEM -> SOLUTION -> SYSTEM IMPACT -->
-    <section id="system-impact" class="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 font-mono text-xs mb-3">
-                <i class="fa-solid fa-wrench"></i>
-                <span>Engineering Resolutions</span>
-            </div>
-            <h2 class="text-3xl font-heading font-bold text-slate-900">
-                Problem $\rightarrow$ Solution $\rightarrow$ System Impact
-            </h2>
-            <p class="text-slate-500 text-sm mt-2">
-                Core technical bottlenecks solved during final system integration.
-            </p>
-        </div>
+<!-- Feature pipeline modal -->
+<div class="overlay" id="featureModal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="btn close" data-close aria-label="ปิด"><i class="fa-solid fa-xmark"></i></button>
+    <span class="tag fill" id="mType"></span> <span class="tag" id="mWho"></span>
+    <h2 id="mTitle"></h2>
+    <p class="muted" id="mDesc"></p>
+    <div class="pipe">
+      <div><small>01 FRONTEND</small><span id="mFe"></span></div>
+      <div><small>02 API</small><span id="mApi"></span></div>
+      <div><small>03 MIDDLEWARE</small><span id="mGuard"></span></div>
+      <div><small>04 LOGIC</small><span id="mLogic"></span></div>
+      <div><small>05 COLLECTION</small><span id="mDb"></span></div>
+    </div>
+    <div class="card soft"><p id="mNote" class="small"></p></div>
+  </div>
+</div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Card 1 -->
-            <div class="glass-card p-6 rounded-2xl border border-slate-200">
-                <div class="flex items-center space-x-2 font-mono text-xs text-rose-600 mb-2">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <span>PROBLEM 01: Client-side Identity Spoofing</span>
-                </div>
-                <h3 class="font-heading font-bold text-slate-900 mb-2">Unprotected User IDs in API Query Parameters</h3>
-                <p class="text-xs text-slate-600 mb-4">
-                    Early cart and address endpoints relied on client-supplied <code class="font-mono text-slate-800">user_id</code> strings, creating vulnerability to identity spoofing.
-                </p>
-                <div class="pt-3 border-t border-slate-100 flex items-start space-x-2 font-mono text-xs text-emerald-700">
-                    <i class="fa-solid fa-circle-check mt-0.5"></i>
-                    <span><strong>SOLUTION:</strong> Replaced with httpOnly JWT authentication where identity is verified via server-side <code class="text-slate-900">req.user._id</code>.</span>
-                </div>
-            </div>
+<!-- Image lightbox -->
+<div class="overlay lightbox" id="lightbox" hidden>
+  <img id="lightImg" alt="">
+</div>
 
-            <!-- Card 2 -->
-            <div class="glass-card p-6 rounded-2xl border border-slate-200">
-                <div class="flex items-center space-x-2 font-mono text-xs text-rose-600 mb-2">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <span>PROBLEM 02: Price Manipulation Risk</span>
-                </div>
-                <h3 class="font-heading font-bold text-slate-900 mb-2">Client-side Order Total Calculation</h3>
-                <p class="text-xs text-slate-600 mb-4">
-                    Calculated checkout prices inside local React state allowed potential price manipulation before database save.
-                </p>
-                <div class="pt-3 border-t border-slate-100 flex items-start space-x-2 font-mono text-xs text-emerald-700">
-                    <i class="fa-solid fa-circle-check mt-0.5"></i>
-                    <span><strong>SOLUTION:</strong> Enforced backend cart re-read and server-side atomic price calculation before order creation.</span>
-                </div>
-            </div>
-        </div>
-    </section>
+<script>
+// ===== ข้อมูล feature (ตรงกับ README ของ frontend / backend) =====
+const features = [
+  { key: 'custom', hl: true, cat: 'customer', icon: 'fa-palette', name: 'Custom design',
+    api: 'POST /custom-design', who: 'Jittrin · Poramet (3D)',
+    desc: 'ออกแบบช่อเอง: base + ดอกไม้ 3 ชนิด + จำนวน, preview 3D, เซฟเป็น preset 1–5',
+    fe: 'Customdesign.jsx', guard: 'authen', logic: 'เช็ค preset ซ้ำ (409 PRESET_TAKEN) + คิด unit_price', db: 'users.saved_custom_designs',
+    note: 'ช่อ custom ไม่สร้าง product ใหม่ เก็บเฉพาะสูตร (inventory_item_id × quantity) ราคาคำนวณสดทุกครั้งจาก cost_price ปัจจุบัน' },
+  { key: 'ai', hl: true, cat: 'customer', icon: 'fa-robot', name: 'Ask AI chatbot',
+    api: 'POST /ai/ask', who: 'Jittrin',
+    desc: 'ถามสินค้า/ราคา, ให้จัดช่อตามงบ, ถามตะกร้าหรือช่อที่เซฟของตัวเอง, ถามต่อเนื่องได้',
+    fe: 'ChatWidget.jsx', guard: 'authen + rate limit 10/นาที', logic: 'embedding → $vectorSearch → Gemini', db: 'ai_knowledge',
+    note: 'ข้อมูลส่วนตัว (ตะกร้า, ช่อที่เซฟ) ไม่ถูก embed แต่ดึงสดตาม userId ใน token ทำให้ถามข้อมูลของคนอื่นไม่ได้' },
+  { key: 'cart', cat: 'customer', icon: 'fa-cart-shopping', name: 'Cart + gift note',
+    api: 'GET / POST /cart', who: 'Jittrin · Albert (UI)',
+    desc: 'เพิ่ม/ลดจำนวน, ลบ, gift note ≤ 200 ตัวอักษร, ใส่ได้ทั้งสินค้าสำเร็จรูปและช่อ custom',
+    fe: 'CartPage.jsx · CartContext', guard: 'authen', logic: 'calcCart() ใน utils/pricing.js', db: 'carts (1 user = 1 ใบ)',
+    note: 'frontend แสดงราคาที่ backend คำนวณมาให้เท่านั้น (unit_price, subtotal, service_fee, delivery_fee, total)' },
+  { key: 'pay', cat: 'customer', icon: 'fa-qrcode', name: 'Checkout + PromptPay',
+    api: 'POST /payments/create-intent', who: 'Albert · Maliwan (Checkout)',
+    desc: 'สรุปยอด → สร้าง QR PromptPay ผ่าน Stripe → poll สถานะจนเป็น succeeded',
+    fe: 'CheckoutPage · PaymentQRModal', guard: '—', logic: 'Stripe PaymentIntent (promptpay)', db: 'Stripe (test mode)',
+    note: 'ถัดไป: สร้าง order จริงใน DB และให้ backend คิดยอดจากตะกร้าเอง' },
+  { key: 'products', cat: 'customer', icon: 'fa-magnifying-glass', name: 'Products + search',
+    api: 'GET /products?search=', who: 'Maliwan · วิทวัส',
+    desc: 'ดูสินค้าทั้งหมด ค้นหา และ filter ตามประเภท / curated collections',
+    fe: 'ProductsPage.jsx', guard: 'public', logic: 'filter: search, product_type, is_popular, tag', db: 'products',
+    note: 'สินค้า 1 ชิ้นมี components (วัตถุดิบ × จำนวน) อ้างอิง inventory_items' },
+  { key: 'dashboard', cat: 'customer', icon: 'fa-address-book', name: 'Customer dashboard',
+    api: '/user/address · /custom-design', who: 'Maliwan · Albert · Poramet',
+    desc: 'บัญชี, ที่อยู่จัดส่ง (CRUD), ช่อที่เซฟ (แก้ไข/ลบ/ใส่ตะกร้า), ประวัติการสั่งซื้อ',
+    fe: 'customer_dashboard/*', guard: 'authen', logic: 'จัดการที่อยู่ default', db: 'users.shipping_addresses',
+    note: 'ที่อยู่ฝังอยู่ใน document ของ user (embedded) ไม่ได้แยก collection' },
+  { key: 'auth', cat: 'customer', icon: 'fa-shield-halved', name: 'Authentication',
+    api: 'POST /auth/login', who: 'วิทวัส · Albert (UI)',
+    desc: 'สมัคร, login, logout, ลืมรหัสผ่าน, เปลี่ยนรหัสผ่าน (popup จาก Navbar)',
+    fe: 'components/login/*', guard: 'public', logic: 'bcrypt compare → sign JWT 2 ใบ', db: 'users',
+    note: 'accessToken 15 นาที + refreshToken 7 วัน ใน httpOnly cookie, refresh อัตโนมัติด้วย axios interceptor' },
+  { key: 'blog', cat: 'customer', icon: 'fa-newspaper', name: 'Shop blog + reviews',
+    api: 'GET /blog · GET /review', who: 'Maliwan · Albert · Jittrin (UI)',
+    desc: 'บทความดูแลดอกไม้ และรีวิวลูกค้าที่หน้า Home',
+    fe: 'ShopBlogPage · CustomerReview', guard: 'public', logic: 'Blog.find() · สุ่มรีวิว', db: 'blog · reviews',
+    note: 'ฝั่งแอดมินจัดการบทความได้จากหน้า ContentEdit' },
+  { key: 'admin', cat: 'admin', icon: 'fa-user-gear', name: 'Admin management',
+    api: 'POST / PUT / DELETE /products', who: 'วิทวัส · Poramet · Jittrin',
+    desc: 'Overview ยอดขาย, CRUD สินค้า/วัตถุดิบ, รายการ order, จัดการ content, ปุ่ม Sync AI',
+    fe: 'admin_dashboard/*', guard: 'authen + authorize(["admin"])', logic: 'Product CRUD · POST /ai/sync', db: 'products · ai_knowledge',
+    note: 'ลูกค้าทั่วไปเรียก API เหล่านี้ไม่ได้ (403) เพราะ authorize ตรวจ role จาก token' }
+];
 
-    <!-- Footer -->
-    <footer class="py-8 border-t border-slate-200/80 bg-white/60 font-mono text-xs text-center text-slate-500">
-        <p>Atelier de Flora • Team McKraken Final Presentation System</p>
-    </footer>
+// ===== render การ์ด feature =====
+const grid = document.getElementById('featureGrid');
+grid.innerHTML = features.map(f => `
+  <button class="card feature${f.hl ? ' hl' : ''}" data-key="${f.key}" data-cat="${f.cat}" data-hl="${!!f.hl}">
+    <div class="top">
+      <div class="icon"><i class="fa-solid ${f.icon}"></i></div>
+      ${f.hl ? '<span class="tag fill">★ Highlight</span>' : `<span class="tag">${f.cat}</span>`}
+    </div>
+    <h3>${f.name}</h3>
+    <div class="api">${f.api}</div>
+    <div class="who"><span>${f.who}</span><i class="fa-solid fa-arrow-right"></i></div>
+  </button>`).join('');
 
-    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
-    <script>
-        // Feature Data Store for WHOOSH Modal Pipelines
-        const featureData = {
-            'browse-products': {
-                title: 'Browse Products & Filter Pipeline',
-                assignee: 'Maliwan Rodsomrit',
-                type: 'CORE E-COMMERCE',
-                component: 'ProductsPage.jsx',
-                api: 'GET /api/v1/products',
-                handler: 'getProductsHandler',
-                service: 'Search & Tag Filter',
-                model: 'Product.find()',
-                db: 'products',
-                logic: 'Performs search indexing, tag filtering, and pagination. Filters active flower products and populates associated inventory references.',
-                schema: 'Requires base_price (Number), is_active (Boolean), and embedded components array referencing inventory_items ObjectIds.'
-            },
-            'read-blog': {
-                title: 'Shop Blog & Content Pipeline',
-                assignee: 'Jittrin Phuttawechmongkhon',
-                type: 'CORE E-COMMERCE',
-                component: 'ShopBlogPage.jsx',
-                api: 'GET /api/v1/blog',
-                handler: 'getBlogHandler',
-                service: 'Published Article Filter',
-                model: 'Blog.find({status: "published"})',
-                db: 'blog',
-                logic: 'Retrieves published editorial articles, sorts by published_at timestamp, and categorizes articles into popular vs general guide lists.',
-                schema: 'Uses custom String _id (e.g. shb01), title, content, cover_image URL, category enum, and boolean is_popular flag.'
-            },
-            'authentication': {
-                title: 'User Authentication & JWT Flow',
-                assignee: 'Whittawat Phirabhan',
-                type: 'SECURITY & USER',
-                component: 'LoginPage.jsx',
-                api: 'POST /api/v1/auth/login',
-                handler: 'loginHandler',
-                service: 'Bcrypt & JWT Signing',
-                model: 'User.findOne({email})',
-                db: 'users',
-                logic: 'Verifies email, performs bcrypt password hash comparison, generates JWT token, and attaches it as an httpOnly cookie.',
-                schema: 'Strict unique index on email, hashed password string, role ("customer" | "admin"), and embedded shipping_addresses subdocuments.'
-            },
-            'cart': {
-                title: 'Cart Sync & Custom Design Engine',
-                assignee: 'Albert Phonbut',
-                type: 'CORE E-COMMERCE',
-                component: 'CartPage.jsx',
-                api: 'POST /api/v1/cart',
-                handler: 'syncCartHandler',
-                service: 'Duplicate & Stock Check',
-                model: 'Cart.findOneAndUpdate()',
-                db: 'carts',
-                logic: 'Handles standard product additions and custom bouquet specifications. Validates item quantity against inventory limits.',
-                schema: 'Enforces unique user_id index (1 cart per user), items array with product_id ref, and max 200-character gift_note string.'
-            },
-            'address': {
-                title: 'Customer Shipping Address Book',
-                assignee: 'Poramet N.',
-                type: 'USER MANAGEMENT',
-                component: 'CustomerAddress.jsx',
-                api: 'PATCH /api/v1/user/address',
-                handler: 'updateAddressHandler',
-                service: 'Default Address Rule',
-                model: 'User.findByIdAndUpdate()',
-                db: 'users',
-                logic: 'Manages embedded shipping addresses in user profile. Automatically toggles existing defaults to false when a new default is designated.',
-                schema: 'Embedded subdocument array inside User model containing recipient_name, address_line, phone_number, and is_default boolean.'
-            },
-            'checkout': {
-                title: 'Checkout & Atomic Order Creation',
-                assignee: 'Maliwan Rodsomrit',
-                type: 'CORE E-COMMERCE',
-                component: 'CheckoutPage.jsx',
-                api: 'POST /api/v1/orders',
-                handler: 'createOrderHandler',
-                service: 'Re-read Cart & Stock Deduct',
-                model: 'Order.create()',
-                db: 'orders',
-                logic: 'Re-reads cart server-side, validates stock availability, calculates total fees, generates an immutable snapshot, and clears cart.',
-                schema: 'Stores snapshot of purchased products, unit prices, shipping_address copy, order_status, and grand_total.'
-            },
-            'admin': {
-                title: 'Admin Management & Role Guard',
-                assignee: 'Whittawat / Jittrin',
-                type: 'ADMIN & OPERATIONS',
-                component: 'AdminDashboard.jsx',
-                api: 'PATCH /api/v1/products/:id',
-                handler: 'adminMutationHandler',
-                service: 'authorize("admin") Guard',
-                model: 'Product.findByIdAndUpdate()',
-                db: 'products',
-                logic: 'Guards admin actions using authorize("admin") middleware. Enables CRUD mutations over product listings, stock counts, and order statuses.',
-                schema: 'Validates admin role before mutating catalog products, inventory stock levels, or order status state transitions.'
-            }
-        };
+grid.addEventListener('click', e => {
+  const card = e.target.closest('.feature');
+  if (card) openFeature(card.dataset.key);
+});
 
-        // Open Modal with Depth WHOOSH Effect
-        function openFeatureModal(featureKey) {
-            const data = featureData[featureKey];
-            if (!data) return;
+document.getElementById('filters').addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const f = btn.dataset.f;
+  document.querySelectorAll('#filters button').forEach(b => b.classList.toggle('on', b === btn));
+  document.querySelectorAll('.feature').forEach(c => {
+    const show = f === 'all' || (f === 'hl' ? c.dataset.hl === 'true' : c.dataset.cat === f);
+    c.classList.toggle('dim', !show);
+  });
+});
 
-            // Populate Modal Content
-            document.getElementById('modal-title').innerText = data.title;
-            document.getElementById('modal-assignee').innerText = 'Assignee: ' + data.assignee;
-            document.getElementById('modal-tag-type').innerText = data.type;
-            
-            document.getElementById('flow-component').innerText = data.component;
-            document.getElementById('flow-api').innerText = data.api;
-            document.getElementById('flow-handler').innerText = data.handler;
-            document.getElementById('flow-service').innerText = data.service;
-            document.getElementById('flow-model').innerText = data.model;
-            document.getElementById('flow-db').innerText = data.db;
+const modal = document.getElementById('featureModal');
+function openFeature(key) {
+  const f = features.find(x => x.key === key);
+  if (!f) return;
+  const set = (id, v) => { document.getElementById(id).textContent = v; };
+  set('mType', f.hl ? '★ HIGHLIGHT' : f.cat.toUpperCase());
+  set('mWho', f.who);
+  set('mTitle', f.name);
+  set('mDesc', f.desc);
+  set('mFe', f.fe); set('mApi', f.api); set('mGuard', f.guard); set('mLogic', f.logic); set('mDb', f.db);
+  set('mNote', f.note);
+  modal.hidden = false;
+}
 
-            document.getElementById('modal-logic-desc').innerText = data.logic;
-            document.getElementById('modal-schema-desc').innerText = data.schema;
+// ===== lightbox =====
+const lightbox = document.getElementById('lightbox');
+document.querySelectorAll('[data-zoom]').forEach(el => el.addEventListener('click', e => {
+  e.preventDefault();
+  document.getElementById('lightImg').src = el.dataset.zoom;
+  lightbox.hidden = false;
+}));
+lightbox.addEventListener('click', () => { lightbox.hidden = true; });
+modal.addEventListener('click', e => {
+  if (e.target === modal || e.target.closest('[data-close]')) modal.hidden = true;
+});
+const anyOverlayOpen = () => !modal.hidden || !lightbox.hidden;
+const closeOverlays = () => { modal.hidden = true; lightbox.hidden = true; };
 
-            // Apply WHOOSH depth animation to background universe
-            const universe = document.getElementById('universe-wrapper');
-            universe.classList.add('universe-zoom-out');
+// ===== slides + โหมด =====
+const slides = [...document.querySelectorAll('.slide')];
+const nav = document.getElementById('nav');
+nav.innerHTML = slides.map((s, i) => `<a href="#${s.id}" data-i="${i}">${s.dataset.nav}</a>`).join('');
+const navLinks = [...nav.querySelectorAll('a')];
+let cur = 0;
+let mode = 'deck';
 
-            // Display modal
-            const modal = document.getElementById('feature-modal');
-            const container = document.getElementById('modal-container');
-            
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            container.classList.remove('translate-y-8');
-            container.classList.add('translate-y-0');
-        }
+function markActive() {
+  navLinks.forEach((a, i) => a.classList.toggle('active', i === cur));
+  document.getElementById('count').textContent = `${cur + 1} / ${slides.length}`;
+  document.getElementById('progress').style.width = ((cur + 1) / slides.length * 100) + '%';
+}
 
-        // Close Modal
-        function closeFeatureModal() {
-            const universe = document.getElementById('universe-wrapper');
-            universe.classList.remove('universe-zoom-out');
+function go(i) {
+  cur = Math.max(0, Math.min(slides.length - 1, i));
+  if (mode === 'deck') {
+    slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+    slides[cur].scrollTop = 0;
+  } else {
+    slides[cur].scrollIntoView({ behavior: 'smooth' });
+  }
+  history.replaceState(null, '', '#' + slides[cur].id);
+  markActive();
+}
 
-            const modal = document.getElementById('feature-modal');
-            const container = document.getElementById('modal-container');
+function setMode(m) {
+  mode = m;
+  document.body.classList.toggle('deck', m === 'deck');
+  document.body.classList.toggle('scroll', m === 'scroll');
+  const btn = document.getElementById('modeBtn');
+  btn.innerHTML = m === 'deck'
+    ? '<i class="fa-solid fa-scroll"></i><span class="lbl">Scroll</span>'
+    : '<i class="fa-solid fa-display"></i><span class="lbl">Slides</span>';
+  btn.title = m === 'deck' ? 'เปลี่ยนเป็นโหมดเลื่อนอ่าน (M)' : 'เปลี่ยนเป็นโหมดสไลด์ (M)';
+  try { localStorage.setItem('adf-mode', m); } catch (e) {}
+  if (m === 'deck') {
+    go(cur);
+  } else {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[cur].scrollIntoView();
+  }
+}
 
-            modal.classList.add('opacity-0', 'pointer-events-none');
-            container.classList.add('translate-y-8');
-            container.classList.remove('translate-y-0');
-        }
+document.getElementById('modeBtn').addEventListener('click', () => setMode(mode === 'deck' ? 'scroll' : 'deck'));
+document.getElementById('prevBtn').addEventListener('click', () => go(cur - 1));
+document.getElementById('nextBtn').addEventListener('click', () => go(cur + 1));
+navLinks.forEach(a => a.addEventListener('click', e => { e.preventDefault(); go(+a.dataset.i); }));
 
-        // Universe Filter Toggle
-        function filterUniverse(category) {
-            const buttons = document.querySelectorAll('.filter-btn');
-            buttons.forEach(btn => {
-                if (btn.getAttribute('data-filter') === category) {
-                    btn.classList.add('bg-slate-900', 'text-white');
-                    btn.classList.remove('bg-white', 'text-slate-600');
-                } else {
-                    btn.classList.remove('bg-slate-900', 'text-white');
-                    btn.classList.add('bg-white', 'text-slate-600');
-                }
-            });
+// โหมด scroll: อัปเดตเมนูตามสไลด์ที่อยู่บนจอ
+const io = new IntersectionObserver(entries => {
+  if (mode !== 'scroll') return;
+  entries.forEach(en => {
+    if (en.isIntersecting) { cur = slides.indexOf(en.target); markActive(); }
+  });
+}, { rootMargin: '-45% 0px -50% 0px' });
+slides.forEach(s => io.observe(s));
 
-            const nodes = document.querySelectorAll('.node-item');
-            nodes.forEach(node => {
-                const nodeCat = node.getAttribute('data-category');
-                if (category === 'all' || nodeCat === category) {
-                    node.style.opacity = '1';
-                    node.style.pointerEvents = 'auto';
-                } else {
-                    node.style.opacity = '0.2';
-                    node.style.pointerEvents = 'none';
-                }
-            });
-        }
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input, textarea')) return;
+  if (anyOverlayOpen()) { if (e.key === 'Escape') closeOverlays(); return; }
+  const k = e.key.toLowerCase();
+  if (k === 'm') return setMode(mode === 'deck' ? 'scroll' : 'deck');
+  if (k === 'n') return document.body.classList.toggle('show-notes');
+  if (k === 'd') return document.body.classList.toggle('hide-draft');
+  if (k === 'f') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen?.();
+    return;
+  }
+  if (mode !== 'deck') return;
+  if (['arrowright', 'pagedown', ' '].includes(k)) { e.preventDefault(); go(cur + 1); }
+  else if (['arrowleft', 'pageup'].includes(k)) { e.preventDefault(); go(cur - 1); }
+  else if (k === 'home') go(0);
+  else if (k === 'end') go(slides.length - 1);
+});
 
-        // Keyboard Shortcut Navigation Support
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeFeatureModal();
-            }
-        });
-    </script>
+// ปัดซ้าย/ขวาบนจอสัมผัส (โหมด deck)
+let touchX = null;
+document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  if (mode !== 'deck' || touchX === null || anyOverlayOpen()) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 60) go(cur + (dx < 0 ? 1 : -1));
+  touchX = null;
+});
+
+// เริ่มต้น: โหมดที่เคยเลือก หรือ deck บนจอใหญ่ / scroll บนมือถือ
+let saved = null;
+try { saved = localStorage.getItem('adf-mode'); } catch (e) {}
+const start = slides.findIndex(s => '#' + s.id === location.hash);
+cur = start >= 0 ? start : 0;
+setMode(saved || (window.innerWidth < 820 ? 'scroll' : 'deck'));
+</script>
 </body>
 </html>
