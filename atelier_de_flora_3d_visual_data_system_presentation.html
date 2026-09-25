@@ -439,7 +439,7 @@ body.scroll .progress { display: none; }
       </div>
       <div class="card member">
         <div class="avatar">วภ</div>
-        <h3>วิทวัส ภิระบรรณ์</h3>
+        <h3>Withawat P.</h3>
         <div class="role">Design · Auth · Products</div>
         <ul>
           <li>Auth backend + frontend</li>
@@ -913,7 +913,7 @@ body.scroll .progress { display: none; }
       <a class="btn" href="https://github.com/JittrinP/McKraken_sprint3_Backend" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Backend repo</a>
       <a class="btn" href="https://miro.com/app/board/uXjVHuvGF_0=/" target="_blank" rel="noopener"><i class="fa-solid fa-chalkboard"></i> Miro board</a>
     </div>
-    <p class="small muted" style="margin-top:2.5em">Jittrin P. · Albert Phonbut · Maliwan Rodsomrit · วิทวัส ภิระบรรณ์ · Poramet N.</p>
+    <p class="small muted" style="margin-top:2.5em">Jittrin P. · Albert P. · Maliwan R. · Withawat P. · Poramet N.</p>
   </div>
 </section>
 
@@ -983,7 +983,7 @@ const features = [
     fe: 'customer_dashboard/*', guard: 'authen', logic: 'จัดการที่อยู่ default', db: 'users.shipping_addresses',
     note: 'ที่อยู่ฝังอยู่ใน document ของ user (embedded) ไม่ได้แยก collection' },
   { key: 'auth', cat: 'customer', icon: 'fa-shield-halved', name: 'Authentication',
-    api: 'POST /auth/login', who: 'วิทวัส · Albert (UI)',
+    api: 'POST /auth/login', who: 'Withawat · Albert (UI)',
     desc: 'สมัคร, login, logout, ลืมรหัสผ่าน, เปลี่ยนรหัสผ่าน (popup จาก Navbar)',
     fe: 'components/login/*', guard: 'public', logic: 'bcrypt compare → sign JWT 2 ใบ', db: 'users',
     note: 'accessToken 15 นาที + refreshToken 7 วัน ใน httpOnly cookie, refresh อัตโนมัติด้วย axios interceptor' },
@@ -993,7 +993,7 @@ const features = [
     fe: 'ShopBlogPage · CustomerReview', guard: 'public', logic: 'Blog.find() · สุ่มรีวิว', db: 'blog · reviews',
     note: 'ฝั่งแอดมินจัดการบทความได้จากหน้า ContentEdit' },
   { key: 'admin', cat: 'admin', icon: 'fa-user-gear', name: 'Admin management',
-    api: 'POST / PUT / DELETE /products', who: 'วิทวัส · Poramet · Jittrin',
+    api: 'POST / PUT / DELETE /products', who: 'Withawat · Poramet · Jittrin',
     desc: 'Overview ยอดขาย, CRUD สินค้า/วัตถุดิบ, รายการ order, จัดการ content, ปุ่ม Sync AI',
     fe: 'admin_dashboard/*', guard: 'authen + authorize(["admin"])', logic: 'Product CRUD · POST /ai/sync', db: 'products · ai_knowledge',
     note: 'ลูกค้าทั่วไปเรียก API เหล่านี้ไม่ได้ (403) เพราะ authorize ตรวจ role จาก token' }
