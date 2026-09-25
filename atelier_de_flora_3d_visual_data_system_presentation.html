@@ -423,43 +423,43 @@ body.scroll .progress { display: none; }
           <li>Address, Review, Blog model</li>
           <li>Cart page UI, AsideAdmin</li>
         </ul>
-        <div class="me">ภูมิใจที่สุด: <span class="draft">TODO</span></div>
+        <div class="me">ภูมิใจที่สุด: <span class="draft">ต่อ Backend เข้า Frontend ได้ครับ</span></div>
       </div>
       <div class="card member">
         <div class="avatar">MR</div>
         <h3>Maliwan Rodsomrit</h3>
-        <div class="role">Landing · Dashboard · Checkout</div>
+        <div class="role">Model · Dashboard · Checkout</div>
         <ul>
-          <li>Landing, Customer dashboard</li>
+          <li>Model, Customer dashboard</li>
           <li>Checkout, OrderConfirmed, OrderList</li>
           <li>Product search, Blog CRUD</li>
           <li>Presentation เวอร์ชันแรก</li>
         </ul>
-        <div class="me">ภูมิใจที่สุด: <span class="draft">TODO</span></div>
+        <div class="me">ภูมิใจที่สุด: <span class="draft">Process Plan</span></div>
       </div>
       <div class="card member">
         <div class="avatar">วภ</div>
         <h3>วิทวัส ภิระบรรณ์</h3>
-        <div class="role">Auth · Products</div>
+        <div class="role">Design · Auth · Products</div>
         <ul>
           <li>Auth backend + frontend</li>
           <li>JWT cookie + refresh token</li>
           <li>Product CRUD</li>
           <li>NavBar, Products page</li>
         </ul>
-        <div class="me">ภูมิใจที่สุด: <span class="draft">TODO</span></div>
+        <div class="me">ภูมิใจที่สุด: <span class="draft">Design หน้าเว็บ</span></div>
       </div>
       <div class="card member">
         <div class="avatar">PN</div>
         <h3>Poramet N.</h3>
-        <div class="role">Homepage · 3D · Admin</div>
+        <div class="role">Homepage · Custom product · Admin</div>
         <ul>
           <li>Homepage</li>
-          <li>Custom product 3D preview</li>
+          <li>Custom product List</li>
           <li>ProductEdit (admin), Inventory</li>
           <li>Order model, CustomerAddress</li>
         </ul>
-        <div class="me">ภูมิใจที่สุด: <span class="draft">TODO</span></div>
+        <div class="me">ภูมิใจที่สุด: <span class="draft">มีเพื่อนร่วมทีมที่ดี</span></div>
       </div>
     </div>
     <aside class="notes"><b>Notes:</b> ช่วงนี้ 5 นาที แนะนำตัวคนละ ~1 นาที: ชื่อ, ทำส่วนไหน, feature ที่ภูมิใจ</aside>
@@ -619,7 +619,6 @@ body.scroll .progress { display: none; }
     </div>
     <div style="margin-top:1.6em; display:flex; gap:.6em; flex-wrap:wrap">
       <a class="btn solid" href="https://jsd-13-group-project2-mc-kraken-spr.vercel.app/" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดเว็บจริง</a>
-      <span class="tag">ผู้พูด: <span class="draft">TODO</span></span>
     </div>
     <aside class="notes"><b>ก่อน demo:</b> เปิดเว็บ + backend Render ให้ตื่นก่อน 5 นาที · login ใหม่ก่อนเริ่ม (refresh token บน production ยังหลุดหลัง 15 นาที) · เตรียมวิดีโอสำรอง · ~4 นาที</aside>
   </div>
@@ -821,37 +820,37 @@ body.scroll .progress { display: none; }
         <div class="p"><i class="fa-solid fa-circle-exclamation"></i> ราคา</div>
         <h3>คิดราคาที่ frontend → ปลอมได้ / ตัวเลขไม่ตรงกัน</h3>
         <div class="s"><i class="fa-solid fa-check"></i><span>ให้ backend คิด (<code>pricing.js</code>) แล้วส่งยอดมาใน GET /cart · order เก็บ snapshot</span></div>
-        <div class="by">base</div>
+        <div class="by">Cart</div>
       </div>
       <div class="card problem">
         <div class="p"><i class="fa-solid fa-circle-exclamation"></i> Security</div>
         <h3>ส่ง userId ใน URL → แก้ URL ดูข้อมูลคนอื่นได้</h3>
         <div class="s"><i class="fa-solid fa-check"></i><span>เอา userId จาก JWT (<code>req.user.userId</code>) แทน</span></div>
-        <div class="by">ทีม</div>
+        <div class="by">Auth</div>
       </div>
       <div class="card problem">
         <div class="p"><i class="fa-solid fa-circle-exclamation"></i> Auth</div>
         <h3>token หมดใน 15 นาที request ที่ใช้ fetch พัง</h3>
         <div class="s"><i class="fa-solid fa-check"></i><span>เปลี่ยนไปใช้ axios instance ที่มี interceptor refresh token</span></div>
-        <div class="by">ทีม</div>
+        <div class="by">Auth</div>
       </div>
       <div class="card problem">
         <div class="p"><i class="fa-solid fa-circle-exclamation"></i> Data</div>
         <h3>seed ใหม่ แล้ว <code>_id</code> เปลี่ยน → id ที่ hardcode และ AI หาสินค้าไม่เจอ</h3>
         <div class="s"><i class="fa-solid fa-check"></i><span>ดึงจาก API แทนการ hardcode + ปุ่ม Sync AI</span></div>
-        <div class="by">base / Poramet</div>
+        <div class="by">AI chatbot</div>
       </div>
       <div class="card problem">
         <div class="p"><i class="fa-solid fa-circle-exclamation"></i> AI</div>
         <h3>AI (flash-lite) จัดช่อเกินงบ คิดเลขผิด</h3>
         <div class="s"><i class="fa-solid fa-check"></i><span>บังคับแสดงวิธีคิด + ใช้ model ใหญ่เฉพาะคำถามจัดช่อ + fallback</span></div>
-        <div class="by">base</div>
+        <div class="by">AI chatbot</div>
       </div>
       <div class="card problem">
         <div class="p"><i class="fa-solid fa-circle-exclamation"></i> Teamwork</div>
         <h3>merge conflict ที่ไฟล์กลาง (Layout, routes/index)</h3>
         <div class="s"><i class="fa-solid fa-check"></i><span>แยก component, แตะไฟล์กลางให้น้อยที่สุด, แจ้งใน PR</span></div>
-        <div class="by">ทีม</div>
+        <div class="by">Git</div>
       </div>
     </div>
     <div class="next">
