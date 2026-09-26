@@ -164,7 +164,9 @@ McKraken = **กลุ่ม #2 เวลา 14:00–14:35** (จาก `time an
   - Sprint 3: models + routes + ต่อ API จริง + payment + order + admin dashboard + AI chatbot + AI Preview
 - Git flow: แยก branch ต่อ feature → PR → **review 2 คน** → merge เข้า main (frontend PR 84+, backend PR 37+)
 - Feature ใหญ่ (AI chatbot, AI Preview) เขียนแผนเป็นไฟล์ก่อน (`AI_CHATBOT_PLAN.md`, `AI_PREVIEW_PLAN.md`) + **ทดสอบ API ฟรีก่อนลงมือ (Phase 0)**
-- การคุย/แบ่งงาน: `TODO` ประชุมบ่อยแค่ไหน, ช่องทาง (Discord/Line?), daily stand-up? (สไลด์ `#process` ยังเป็น TODO)
+- การสื่อสาร: Discord + Slack · ประชุม จันทร์ / พุธ / ศุกร์ + นัดเพิ่มได้เมื่อจำเป็น (โดยเฉพาะช่วงวางแผนแรกๆ) · daily stand-up แต่ละคนอัปเดตส่วนของตัวเอง ✅ ใส่ในสไลด์แล้ว
+- แบ่งงาน: ทุกคน full-stack รับ feature ไปทำครบ design → frontend → backend
+- กันงานชนกัน: วางแผนเป็นภาพด้วย diagram, ตกลงการแบ่งไฟล์ / ชื่อไฟล์ / วิธีส่งข้อมูลก่อนเริ่ม, ไฟล์ที่ใช้ร่วมกัน (router, layout) ทำร่วมกัน
 - Figma → ออกแบบ UI + design system ก่อนเขียนโค้ด
 
 ### 07 · Problem & Solution
@@ -273,7 +275,7 @@ McKraken = **กลุ่ม #2 เวลา 14:00–14:35** (จาก `time an
 1. ใครพูดหัวข้อไหน (ตารางข้อ 2)
 2. ชื่อ/บทบาท/รูปของแต่ละคน (ข้อ 3)
 3. ปัญหาของแต่ละคน + ตัวอย่าง BSM (ข้อ 07, 08)
-4. ช่องทางสื่อสารของทีม / ประชุมบ่อยแค่ไหน (ข้อ 06)
+4. ~~ช่องทางสื่อสารของทีม / ประชุมบ่อยแค่ไหน (ข้อ 06)~~ ✅ ได้คำตอบแล้ว
 5. Live demo ใช้เว็บจริงบน Vercel หรือ localhost (+ อัดวิดีโอสำรอง) · ใช้บัญชี demo ไหน
 6. วิทวัส: แก้ `sameSite` ของ refresh token เป็น `"none"` ทันพรีเซนต์ไหม (ดู Known issues ข้อ 1)
 7. ทุกคนช่วย review + merge PR ในข้อ 1 ก่อนวันจันทร์ (ต้อง 2 คนต่อ PR)
