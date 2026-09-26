@@ -71,7 +71,8 @@ img { max-width: 100%; display: block; }
 .brand-mark { width: 30px; height: 30px; border-radius: 9px; background: var(--primary); color: var(--secondary); display: grid; place-items: center; font-size: 14px; }
 .brand b { font-family: var(--font-display); font-weight: 600; color: var(--primary-dark); font-size: 16px; }
 .brand span { font-size: 11px; color: var(--muted); border: 1px solid var(--border-strong); padding: 1px 8px; border-radius: 99px; }
-.nav { display: flex; gap: 2px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+/* margin-inline: auto = แบ่งที่ว่างซ้าย/ขวาเท่ากัน → เมนูอยู่กลางระหว่างโลโก้กับปุ่มขวา · min-width: 0 ให้เลื่อนแนวนอนได้ตอนจอแคบ */
+.nav { display: flex; gap: 2px; margin-inline: auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
 .nav::-webkit-scrollbar { display: none; }
 .nav a {
   text-decoration: none; color: var(--muted); font-family: var(--font-mono); font-size: 12px;
@@ -166,6 +167,26 @@ body.deck .slide-inner { margin: auto; }
 }
 body.hide-draft .draft { display: none; }
 
+/* AI Preview: กรอบ screenshot (ยังไม่มีไฟล์ → โชว์กล่องบอกให้ใส่รูป) */
+/* รูปแนวตั้ง: โชว์เต็มรูป (contain) สูงไม่เกินจอ ไม่ครอบตัด caption ด้านล่าง */
+.shot { cursor: zoom-in; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: var(--card); display: grid; place-items: center; min-height: 12em; width: fit-content; max-width: 100%; margin-inline: auto; }
+.shot img { display: block; width: auto; max-width: 100%; max-height: 52vh; object-fit: contain; }
+/* สไลด์ 02 Features (โหมดสไลด์ + จอกว้างเท่านั้น): การ์ด 10 ใบ 3 คอลัมน์ = 4 แถว ล้นจอ → 4 คอลัมน์ (3 แถว) · โหมด scroll คง 3 คอลัมน์ */
+@media (min-width: 1001px) {
+  body.deck #featureGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75em; }
+  /* 3 แถวสูงเกือบเต็มจอ → ลดระยะในการ์ดนิดหน่อย (ขนาดตัวอักษรเท่าเดิม) */
+  body.deck #featureGrid .feature { padding: 0.8em 1.1em; }
+  body.deck #featureGrid .feature .icon { margin-bottom: 0.4em; }
+  body.deck #featureGrid .feature .who { padding-top: 0.4em; }
+}
+/* สไลด์ 03 Tech (โหมดสไลด์ + จอกว้างเท่านั้น): กล่องบริการด้านขวามี 5 กล่อง → เรียง 2 คอลัมน์ (3 แถว) ให้ diagram เตี้ยลง
+   หัวข้อด้านบนจะได้ไม่ล้นจอ · คอลัมน์บริการกว้างขึ้นให้ชื่อไม่ตกบรรทัด */
+@media (min-width: 1001px) {
+  body.deck #tech .arch { grid-template-columns: 0.85fr auto 0.85fr auto 1.9fr; }
+  body.deck #tech .arch .stack { grid-template-columns: 1fr 1fr; }
+}
+.shot .missing { padding: 1em; text-align: center; color: var(--muted); font-size: 0.85em; border: 1px dashed var(--border-strong); border-radius: 10px; margin: 1em; }
+
 /* flow chain */
 .flow { display: flex; align-items: stretch; gap: 0.5em; flex-wrap: wrap; }
 .flow .step {
@@ -179,7 +200,9 @@ body.hide-draft .draft { display: none; }
 @media (max-width: 760px) { .flow { flex-direction: column; } .flow .arrow { transform: rotate(90deg); align-self: flex-start; margin-left: 1em; } }
 
 /* ===== Slide: title ===== */
-.title-slide h1 { font-size: 4.2em; font-weight: 600; letter-spacing: -0.01em; }
+.title-slide h1 { font-size: 4.2em; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
+/* หน้าแรกกว้างกว่าหน้าอื่น (ขยายขอบซ้ายขวา) ชื่อร้านจะได้อยู่บรรทัดเดียว · ขนาดตัวอักษร / รูปเท่าเดิม */
+.title-slide .slide-inner { max-width: 1480px; }
 .title-slide h1 em { font-style: italic; color: var(--primary); font-weight: 400; }
 .title-slide .sub { font-size: 1.3em; margin-top: 0.6em; max-width: 30em; }
 .title-slide .meta { display: flex; flex-wrap: wrap; gap: 0.6em; margin-top: 1.8em; }
@@ -192,6 +215,7 @@ body.scroll .title-art { max-height: 520px; }
   min-height: 420px;
   display: block;
   background: radial-gradient(circle at top, #f9f2ea 0%, #f3efe8 42%, #e8e1d9 100%);
+  --poster-color: #f7f4ee; /* พื้นหลัง poster ให้เนียนกับพื้นครีมของภาพนิ่ง */
 }
 @media (max-width: 620px) { .title-slide h1 { font-size: 2.6em; } .title-art model-viewer { min-height: 320px; } }
 
@@ -390,17 +414,20 @@ body.scroll .progress { display: none; }
     <div>
       <div class="eyebrow">JSD#13 · Final Project · Group #2</div>
       <h1 style="margin-top:.35em">Atelier <em>de</em> Flora</h1>
-      <p class="sub">ร้านดอกไม้ออนไลน์ที่ให้ลูกค้า <b>ออกแบบช่อเอง</b> และมี <b>AI</b> ช่วยจัดช่อตามงบ</p>
+      <p class="sub">ร้านดอกไม้ออนไลน์ที่ให้ลูกค้า <b>ออกแบบช่อเอง</b>, มี <b>AI</b> ช่วยจัดช่อตามงบ และ<b>วาดรูปช่อ</b>ให้ดูก่อนซื้อ</p>
       <div class="meta">
         <span class="tag fill">Team McKraken</span>
         <span class="tag">React · Express · MongoDB</span>
         <span class="tag">Stripe PromptPay</span>
         <span class="tag">Gemini RAG</span>
+        <span class="tag">AI Preview · Cloudflare</span>
       </div>
     </div>
     <div class="title-art">
+      <!-- flower.glb ใหญ่ 40 MB โหลดนาน → poster = ภาพนิ่งของโมเดลเดียวกัน โชว์ทันทีระหว่างรอ โหลดเสร็จแล้วเปลี่ยนเป็น 3D หมุนได้ -->
       <model-viewer
         src="https://rri4tg6y27zcjsqa.public.blob.vercel-storage.com/flower.glb"
+        poster="assets/flower-poster.png"
         alt="3D flower model"
         camera-controls
         auto-rotate
@@ -429,7 +456,7 @@ body.scroll .progress { display: none; }
         <ul>
           <li>Cart + การคิดราคาที่ backend</li>
           <li>Custom design (preset 1–5)</li>
-          <li>AI chatbot (RAG)</li>
+          <li>AI chatbot (RAG) + AI Preview (รูปช่อ)</li>
           <li>Admin Overview, Footer, Shop blog</li>
         </ul>
         <div class="me">ภูมิใจที่สุด: Ask AI จัดช่อตามงบ</div>
@@ -443,6 +470,7 @@ body.scroll .progress { display: none; }
           <li>Stripe PromptPay payment</li>
           <li>Address, Review, Blog model</li>
           <li>Cart page UI, AsideAdmin</li>
+          <li>Admin dashboard (การ์ด + กราฟ)</li>
         </ul>
         <div class="me">ภูมิใจที่สุด:ต่อ Backend เข้า Frontend ได้ครับ</div>
       </div>
@@ -520,11 +548,11 @@ body.scroll .progress { display: none; }
     <div class="grid g2" style="margin-top:1em">
       <div class="card soft">
         <h3><i class="fa-solid fa-user" style="color:var(--primary)"></i>&nbsp; Customer</h3>
-        <p>ดู/ค้นหาสินค้า · ออกแบบช่อ · ตะกร้า + gift note · จ่าย PromptPay · dashboard (ที่อยู่, ช่อที่เซฟ, ประวัติ) · ถาม AI</p>
+        <p>ดู/ค้นหาสินค้า · ออกแบบช่อ + <b>ดูรูป AI ก่อนซื้อ</b> · ตะกร้า + gift note · จ่าย PromptPay · dashboard (ที่อยู่, ช่อที่เซฟ, ประวัติ) · ถาม AI</p>
       </div>
       <div class="card soft">
         <h3><i class="fa-solid fa-user-shield" style="color:var(--primary)"></i>&nbsp; Admin</h3>
-        <p>Overview ยอดขาย · จัดการสินค้า/วัตถุดิบ (CRUD) · รายการ order · จัดการ content · ปุ่ม Sync AI</p>
+        <p>Overview ยอดขาย + กราฟ · จัดการสินค้า/วัตถุดิบ (CRUD) · รายการ order + เปลี่ยนสถานะ · จัดการ content · ปุ่ม Sync AI</p>
       </div>
     </div>
   </div>
@@ -583,11 +611,57 @@ body.scroll .progress { display: none; }
   </div>
 </section>
 
+<!-- ============ 02 HIGHLIGHT: AI PREVIEW ============ -->
+<section class="slide" id="preview" data-nav="★ AI Preview">
+  <div class="slide-inner">
+    <div class="slide-head">
+      <div class="eyebrow"><span class="num">02</span> Highlight 2</div>
+      <h2>AI Preview: เห็นช่อจริงก่อนซื้อ</h2>
+      <p class="lead">ลูกค้า custom ช่อเองแต่นึกภาพไม่ออก → กด Preview ให้ AI วาดรูปช่อสมจริงแทนโมเดล 3D</p>
+    </div>
+    <div class="flow">
+      <div class="step"><i class="fa-regular fa-image"></i><b>Preview</b><span>POST /ai/preview { components } · ต้อง login · 3 รูป/วัน/คน</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-pen-ruler"></i><b>Prompt ที่ backend</b><span>ชื่อ/สีวัตถุดิบจาก DB · ลูกค้าพิมพ์ prompt เองไม่ได้</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-cloud"></i><b>Cloudflare FLUX.2</b><span>10–30 วิ · ไซส์ S/M/L ตามจำนวนดอก (M/L แนบรูป reference จาก 3D)</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-clock-rotate-left"></i><b>History ในเครื่อง</b><span>localStorage 10 รูป · ช่อเดิมไม่เสียโควตา</span></div>
+      <div class="arrow"><i class="fa-solid fa-chevron-right"></i></div>
+      <div class="step"><i class="fa-solid fa-floppy-disk"></i><b>Save → Vercel Blob</b><span>DB เก็บแค่ URL · cart / order เห็นรูป</span></div>
+    </div>
+    <div class="split" style="grid-template-columns: 0.8fr 1.4fr; align-items:start; margin-top:1.2em">
+      <div>
+        <div class="shot" data-zoom="assets/ai-preview.jpg">
+          <img src="assets/ai-preview.jpg" alt="ตัวอย่างรูปช่อดอกไม้ที่ AI Preview สร้างจากหน้า Custom design"
+               onerror="this.replaceWith(Object.assign(document.createElement('div'), { className: 'missing', innerHTML: 'ใส่ screenshot จากเว็บจริงที่ <code>assets/ai-preview.jpg</code>' }))">
+        </div>
+        <p class="er-cap" style="text-align:center"><i class="fa-solid fa-magnifying-glass-plus"></i> กดที่รูปเพื่อขยาย</p>
+      </div>
+      <div class="grid" style="gap:1em">
+        <div class="card">
+          <h3>ทำให้รูปเชื่อถือได้</h3>
+          <ul>
+            <li><b>caption</b> ใต้รูปบอกจำนวนดอกจริงที่เลือก (AI วาดจำนวนไม่เป๊ะ)</li>
+            <li>เปลี่ยนดอกหลัง preview → ป้ายเตือน <b>“รูปไม่ตรงกับช่อ”</b> · กดรูปใน history เพื่อเติมตัวเลือกกลับ</li>
+            <li>seed เดิมก็ได้รูปไม่เหมือนเดิม → เก็บ history แทนการสร้างใหม่</li>
+          </ul>
+        </div>
+        <div class="card soft">
+          <h3>order = snapshot (รวมรูป)</h3>
+          <p class="small">Preview ยังไม่ขึ้น Blob · <b>Save</b> ถึงอัป (1 รูป/ช่อ) · สั่งซื้อแล้ว backend <b>ก๊อปรูปเป็นไฟล์ของ order เอง</b> → ลบช่อ / เปลี่ยนรูปทีหลัง ประวัติสั่งซื้อไม่เสีย</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes"><b>Notes:</b> Gemini free tier สร้างรูปไม่ได้ (limit 0) จึงทดสอบก่อน (Phase 0) แล้วเปลี่ยนเป็น Cloudflare Workers AI ฟรี ~90 รูป/วัน · ก่อนพรีเซนต์ให้ Preview ช่อที่จะ demo ไว้ใน history</aside>
+  </div>
+</section>
+
 <!-- ============ 02 HIGHLIGHT: AI ============ -->
 <section class="slide" id="ai" data-nav="★ Ask AI">
   <div class="slide-inner">
     <div class="slide-head">
-      <div class="eyebrow"><span class="num">02</span> Highlight 2</div>
+      <div class="eyebrow"><span class="num">02</span> Highlight 3</div>
       <h2>Ask AI: ผู้ช่วยจัดช่อ (RAG)</h2>
       <p class="lead">AI ตอบจากข้อมูลจริงของร้าน ไม่เดาราคาเอง และรู้จักตะกร้า/ช่อที่เซฟของคนที่ถาม</p>
     </div>
@@ -607,7 +681,7 @@ body.scroll .progress { display: none; }
         <h3>ตัวอย่างบทสนทนา</h3>
         <div class="chat">
           <div class="bubble q">ช่วยจัดช่อ custom ให้แม่ งบ 800</div>
-          <div class="bubble a">แนะนำกระดาษห่อ + กุหลาบชมพู 5 + คาร์เนชั่น 3 + ยิปโซ 2 … พร้อมวิธีคิด: วัตถุดิบ ฿xxx + service fee ฿100 + ค่าส่ง ฿10 = ไม่เกินงบ</div>
+          <div class="bubble a">แนะนำกระดาษห่อ + กุหลาบชมพู 5 + คาร์เนชั่น 3 + ยิปโซ 2 … พร้อมวิธีคิด: วัตถุดิบ ฿xxx + service fee ฿100 + ค่าส่ง ฿10 = ไม่เกินงบ<br><span class="tag fill" style="margin-top:.5em"><i class="fa-regular fa-image"></i>&nbsp; Generate preview</span></div>
           <div class="bubble q">ตะกร้าของฉันรวมเท่าไหร่</div>
         </div>
       </div>
@@ -616,8 +690,9 @@ body.scroll .progress { display: none; }
         <ul>
           <li>ข้อมูลส่วนตัว <b>ไม่ถูก embed</b> ดึงตาม token เท่านั้น → ถามข้อมูลคนอื่นไม่ได้ (ทดสอบ prompt injection แล้ว)</li>
           <li>ต้อง login + rate limit 10 ครั้ง/นาที/คน</li>
+          <li>AI แนะนำช่อ → backend <b>ตรวจสูตร</b> (วัตถุดิบมีจริง, base 1 + ดอก 1–3 ชนิด) → ปุ่ม <b>Generate preview</b> พาไปหน้า Custom design + สร้างรูปให้</li>
           <li>แอดมินกด <b>Sync AI</b> หลังแก้สินค้า → อัปเดตเฉพาะตัวที่เปลี่ยน</li>
-          <li>model ใหญ่ล่ม → fallback ไป flash-lite</li>
+          <li>Google ล่ม → fallback ไป model สำรอง</li>
         </ul>
       </div>
     </div>
@@ -630,18 +705,19 @@ body.scroll .progress { display: none; }
   <div class="slide-inner">
     <div class="slide-head">
       <div class="eyebrow"><span class="num">02</span> Live Demo</div>
-      <h2>Demo: จากออกแบบช่อ ถึงจ่ายเงิน</h2>
+      <h2>Demo: จากถาม AI ถึงจ่ายเงิน</h2>
     </div>
-    <div class="grid g4">
-      <div class="card"><div class="icon"><i class="fa-solid fa-palette"></i></div><h3>1 · Custom</h3><p>Login → Home → ออกแบบช่อ → Save preset → Add to cart</p></div>
-      <div class="card"><div class="icon"><i class="fa-solid fa-robot"></i></div><h3>2 · Ask AI</h3><p>“ช่วยจัดช่อ custom ให้แม่ งบ 800” → ชี้วิธีคิดราคา</p></div>
-      <div class="card"><div class="icon"><i class="fa-solid fa-cart-shopping"></i></div><h3>3 · Cart</h3><p>“ตะกร้าของฉันรวมเท่าไหร่” → เทียบกับหน้า Cart</p></div>
-      <div class="card"><div class="icon"><i class="fa-solid fa-qrcode"></i></div><h3>4 · Checkout</h3><p>Checkout → QR PromptPay (Stripe test mode)</p></div>
+    <div class="grid g5">
+      <div class="card"><div class="icon"><i class="fa-solid fa-robot"></i></div><h3>1 · Ask AI</h3><p>Login → “ช่วยจัดช่อ custom ให้แม่ งบ 800” → ชี้วิธีคิดราคา → กด <b>Generate preview</b></p></div>
+      <div class="card"><div class="icon"><i class="fa-regular fa-image"></i></div><h3>2 · AI Preview</h3><p>หน้า Custom เติมตัวเลือกให้ + ได้รูป · เปลี่ยนดอก 1 ชนิด → ป้ายเตือน → กดรูปใน history กลับ</p></div>
+      <div class="card"><div class="icon"><i class="fa-solid fa-palette"></i></div><h3>3 · Save</h3><p>Save preset → Custom List เห็นรูป → Add to cart → ตะกร้ามีรูป</p></div>
+      <div class="card"><div class="icon"><i class="fa-solid fa-cart-shopping"></i></div><h3>4 · Cart</h3><p>ถาม AI “ตะกร้าของฉันรวมเท่าไหร่” → เทียบกับหน้า Cart</p></div>
+      <div class="card"><div class="icon"><i class="fa-solid fa-qrcode"></i></div><h3>5 · Checkout</h3><p>QR PromptPay (Stripe test mode) → Purchases เห็นรูป + ราคา</p></div>
     </div>
     <div style="margin-top:1.6em; display:flex; gap:.6em; flex-wrap:wrap">
       <a class="btn solid" href="https://jsd-13-group-project2-mc-kraken-spr.vercel.app/" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> เปิดเว็บจริง</a>
     </div>
-    <aside class="notes"><b>ก่อน demo:</b> เปิดเว็บ + backend Render ให้ตื่นก่อน 5 นาที · login ใหม่ก่อนเริ่ม (refresh token บน production ยังหลุดหลัง 15 นาที) · เตรียมวิดีโอสำรอง · ~4 นาที</aside>
+    <aside class="notes"><b>ก่อน demo:</b> เปิดเว็บ + backend Render ให้ตื่นก่อน 5 นาที · login ใหม่ก่อนเริ่ม (refresh token บน production ยังหลุดหลัง 15 นาที) · <b>Preview ช่อที่จะ demo ไว้ก่อน</b> (browser + บัญชีเดียวกัน → รูปขึ้นทันทีจาก history) · เตรียมวิดีโอสำรอง · ~4.5 นาที</aside>
   </div>
 </section>
 
@@ -661,6 +737,8 @@ body.scroll .progress { display: none; }
         <div class="box"><i class="fa-solid fa-leaf"></i><div><b>MongoDB Atlas</b><span>DB FlowerShop + Vector Search</span></div></div>
         <div class="box"><i class="fa-brands fa-stripe-s"></i><div><b>Stripe</b><span>PromptPay QR</span></div></div>
         <div class="box"><i class="fa-solid fa-wand-magic-sparkles"></i><div><b>Google Gemini</b><span>embedding + flash / flash-lite</span></div></div>
+        <div class="box"><i class="fa-brands fa-cloudflare"></i><div><b>Cloudflare Workers AI</b><span>FLUX.2 สร้างรูปช่อ</span></div></div>
+        <div class="box"><i class="fa-solid fa-box-archive"></i><div><b>Vercel Blob</b><span>เก็บไฟล์รูป (DB เก็บ URL)</span></div></div>
       </div>
     </div>
     <div class="grid g2" style="margin-top:1.4em; align-items:start">
@@ -702,7 +780,7 @@ body.scroll .progress { display: none; }
           <h3>Design rules</h3>
           <div class="rules">
             <div><b>1</b><span>ทุกอย่างที่ขายได้ = <b>product</b> (ดอกเดี่ยว = product ที่มีวัตถุดิบ 1 รายการ)</span></div>
-            <div><b>2</b><span><b>order = snapshot</b> เก็บชื่อ/ราคา ณ ตอนสั่ง ไม่อ้างราคาปัจจุบันย้อนหลัง</span></div>
+            <div><b>2</b><span><b>order = snapshot</b> เก็บชื่อ/ราคา/รูป ณ ตอนสั่ง ไม่อ้างราคาปัจจุบันย้อนหลัง</span></div>
             <div><b>3</b><span>ช่อ custom <b>ไม่สร้าง product ใหม่</b> เก็บสูตรใน <code>custom_specs</code></span></div>
             <div><b>4</b><span><b>inventory</b> = วัตถุดิบภายในร้าน (cost_price)</span></div>
           </div>
@@ -714,6 +792,7 @@ body.scroll .progress { display: none; }
             <span class="chip">products</span><span class="chip">inventory_items</span><span class="chip">carts</span>
             <span class="chip">orders</span><span class="chip">blog</span><span class="chip">reviews</span><span class="chip">ai_knowledge</span>
           </div>
+          <p class="small muted" style="margin-top:.6em">รูป AI ไม่เก็บใน MongoDB: <code>preview_image_url</code> ในช่อที่เซฟและใน order ชี้ไปที่ไฟล์บน Vercel Blob</p>
         </div>
       </div>
     </div>
@@ -782,7 +861,7 @@ body.scroll .progress { display: none; }
         <p>JavaScript ในหน้าเว็บอ่าน token ไม่ได้ ลดความเสี่ยง XSS · บัญชี suspended login ไม่ได้ (403)</p>
       </div>
     </div>
-    <p class="small muted" style="margin-top:1em">Forget / reset password: ตอนนี้ใช้รหัสยืนยันจำลอง ยังไม่ส่งอีเมลจริง <span class="draft">วิทวัสเช็ค</span></p>
+    <p class="small muted" style="margin-top:1em">Forget / reset password: ตอนนี้ใช้รหัสยืนยันจำลอง ยังไม่ส่งอีเมลจริง</p>
     <aside class="notes"><b>Notes:</b> ถ้าถูกถาม: refresh token บน production ยังตั้ง <code>sameSite: "strict"</code> ข้ามโดเมน Vercel → Render ไม่ได้ กำลังแก้เป็น <code>"none"</code></aside>
   </div>
 </section>
@@ -799,27 +878,40 @@ body.scroll .progress { display: none; }
       <a class="btn" href="https://www.figma.com/design/HkKG3U7j8N08Z79CWXH30P/JDS13-Project?node-id=0-1&p=f&m=draw" target="_blank" rel="noopener"><i class="fa-solid fa-chalkboard"></i>Figma</a>
       </div>
       <div class="card"><span class="tag">Sprint 2</span><h3 style="margin-top:.5em">UI / Pages</h3><p>สร้างหน้าและ component ด้วย mock data</p></div>
-      <div class="card"><span class="tag">Sprint 3</span><h3 style="margin-top:.5em">Backend &amp; Integration</h3><p>models + routes, ต่อ API จริง, payment, AI chatbot, deploy</p></div>
+      <div class="card"><span class="tag">Sprint 3</span><h3 style="margin-top:.5em">Backend &amp; Integration</h3><p>models + routes, ต่อ API จริง, payment, order, admin dashboard, AI chatbot, AI Preview, deploy</p></div>
     </div>
     <div class="grid g2" style="margin-top:1em; align-items:start">
       <div class="card">
         <h3><i class="fa-solid fa-table-columns" style="color:var(--primary)"></i>&nbsp; Miro kanban</h3>
         <a class="btn" href="https://miro.com/app/board/uXjVHuvGF_0=/" target="_blank" rel="noopener"><i class="fa-solid fa-chalkboard"></i>Miro board</a>
         <div class="kanban" style="margin:.7em 0"><span>Backlog</span><span>To Do</span><span>In Progress</span><span>Code Review</span><span>Testing</span><span>Done</span></div>
-        <p class="small muted">ทุกการ์ดมี assignee + วันที่ · แบ่งงานตาม feature (ทำครบ model → route → หน้าเว็บ)</p>
+        <p class="small muted">ทุกการ์ดมี assignee + วันที่ · ย้ายการ์ดตามสถานะงานจริง</p>
       </div>
       <div class="card">
         <h3><i class="fa-solid fa-code-branch" style="color:var(--primary)"></i>&nbsp; Git flow</h3>
         <div class="flow" style="margin:.7em 0">
           <div class="step"><b>branch</b><span>1 feature</span></div>
           <div class="step"><b>PR</b><span>อธิบายสิ่งที่แก้</span></div>
-          <div class="step"><b>review</b><span>เพื่อนตรวจ</span></div>
+          <div class="step"><b>review</b><span>เพื่อนตรวจ 2 คน</span></div>
           <div class="step"><b>merge</b><span>main → deploy</span></div>
         </div>
-        <p class="small muted">frontend 73+ PRs · backend 27+ PRs</p>
+        <p class="small muted">frontend 84+ PRs · backend 37+ PRs · feature ใหญ่ (AI) เขียนแผนเป็นไฟล์ + ทดสอบ API ฟรีก่อนลงมือ (Phase 0)</p>
       </div>
     </div>
-    <p class="small muted" style="margin-top:1em"><i class="fa-regular fa-comments"></i> การสื่อสาร: <span class="draft">TODO ช่องทาง / ประชุมบ่อยแค่ไหน / daily stand-up?</span></p>
+    <div class="grid g3" style="margin-top:1em; align-items:start">
+      <div class="card soft">
+        <h3><i class="fa-regular fa-comments" style="color:var(--primary)"></i>&nbsp; การสื่อสาร</h3>
+        <p class="small"><i class="fa-brands fa-discord"></i> Discord · <i class="fa-brands fa-slack"></i> Slack · ประชุม <b>จันทร์ / พุธ / ศุกร์</b> และนัดเพิ่มได้ตลอดเมื่อจำเป็น (โดยเฉพาะช่วงวางแผนแรกๆ) · daily stand-up แต่ละคนอัปเดตส่วนของตัวเอง</p>
+      </div>
+      <div class="card soft">
+        <h3><i class="fa-solid fa-layer-group" style="color:var(--primary)"></i>&nbsp; แบ่งงาน: ทุกคน full-stack</h3>
+        <p class="small">แต่ละคนรับ feature ไปทำครบ ตั้งแต่ design → frontend → backend (model → route → หน้าเว็บ)</p>
+      </div>
+      <div class="card soft">
+        <h3><i class="fa-solid fa-handshake" style="color:var(--primary)"></i>&nbsp; กันงานชนกัน</h3>
+        <p class="small">วางแผนเป็นภาพด้วย diagram · ตกลงการแบ่งไฟล์, ชื่อไฟล์ และวิธีส่งข้อมูลระหว่างกันก่อนเริ่ม · ไฟล์ที่ใช้ร่วมกัน (router, layout) ทำร่วมกัน</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -867,9 +959,29 @@ body.scroll .progress { display: none; }
         <div class="s"><i class="fa-solid fa-check"></i><span>แยก component, แตะไฟล์กลางให้น้อยที่สุด, แจ้งใน PR</span></div>
         <div class="by">Git</div>
       </div>
+      <div class="card problem">
+        <div class="p"><i class="fa-solid fa-circle-exclamation"></i> AI Preview</div>
+        <h3>Gemini free tier สร้างรูปไม่ได้ (limit: 0)</h3>
+        <div class="s"><i class="fa-solid fa-check"></i><span>ทดสอบ API ก่อนสร้างจริง (Phase 0) → เปลี่ยนไปใช้ Cloudflare Workers AI (ฟรี ~90 รูป/วัน)</span></div>
+        <div class="by">AI Preview</div>
+      </div>
+      <div class="card problem">
+        <div class="p"><i class="fa-solid fa-circle-exclamation"></i> AI Preview</div>
+        <h3>AI วาดจำนวนดอกไม่ตรง · seed เดิมได้รูปไม่เหมือนเดิม</h3>
+        <div class="s"><i class="fa-solid fa-check"></i><span>ไซส์ S/M/L + รูป reference · caption บอกจำนวนจริง · เก็บ history ในเครื่อง ไม่สร้างซ้ำ</span></div>
+        <div class="by">AI Preview</div>
+      </div>
+      <div class="card problem">
+        <div class="p"><i class="fa-solid fa-circle-exclamation"></i> Data</div>
+        <h3>เก็บรูปใน MongoDB ใหญ่ / ลบช่อแล้วรูปใน order หาย</h3>
+        <div class="s"><i class="fa-solid fa-check"></i><span>ไฟล์อยู่บน Vercel Blob, DB เก็บ URL · order ก๊อปรูปเป็นของตัวเอง (snapshot)</span></div>
+        <div class="by">AI Preview · Order</div>
+      </div>
     </div>
     <div class="next">
       <b class="muted">สิ่งที่จะทำต่อ:</b>
+      <span class="tag">รูป AI ให้ช่อที่ใส่ตะกร้าโดยไม่เซฟ</span>
+      <span class="tag">จำนวน / ชนิดดอกในรูปให้แม่นขึ้น</span>
       <span class="tag">คิดยอด payment จากตะกร้าที่ backend</span>
       <span class="tag">Blog admin auth</span>
       <span class="tag">Route guard หน้า dashboard</span>
@@ -889,7 +1001,7 @@ body.scroll .progress { display: none; }
     <div class="grid g3" style="align-items:start">
       <div class="card bsm-col">
         <h3><i class="fa-solid fa-seedling" style="color:var(--primary)"></i> Mindsets</h3>
-        <div class="item"><b>Growth Mindset</b>เรียน RAG / vector search / Gemini API ที่ไม่ได้อยู่ในหลักสูตร แล้วนำมาใช้จริง</div>
+        <div class="item"><b>Growth Mindset</b>เรียน RAG / vector search / Gemini API / AI สร้างรูป ที่ไม่ได้อยู่ในหลักสูตร แล้วนำมาใช้จริง</div>
         <div class="item"><b>Persistence</b>ไล่แก้ปัญหา cookie ข้ามโดเมน และ token หมดอายุจนระบบ login ใช้ได้</div>
         <div class="item"><b>Personal Responsibility</b>เจ้าของ feature ดูแลครบตั้งแต่ model → route → หน้าเว็บ</div>
         <div class="item"><b>Future Orientation</b>วางแผนภาพรวมและรายเอียดงานเบื้องต้นเเละปัญหาที่คิดว่าจะเกิดขึ้น พร้อมวิธีป้องกัน</div>
@@ -980,9 +1092,14 @@ const features = [
     desc: 'ออกแบบช่อเอง: base + ดอกไม้ 3 ชนิด + จำนวน, preview 3D, เซฟเป็น preset 1–5',
     fe: 'Customdesign.jsx', guard: 'authen', logic: 'เช็ค preset ซ้ำ (409 PRESET_TAKEN) + คิด unit_price', db: 'users.saved_custom_designs',
     note: 'ช่อ custom ไม่สร้าง product ใหม่ เก็บเฉพาะสูตร (inventory_item_id × quantity) ราคาคำนวณสดทุกครั้งจาก cost_price ปัจจุบัน' },
+  { key: 'preview', hl: true, cat: 'customer', icon: 'fa-image', name: 'AI Preview',
+    api: 'POST /ai/preview', who: 'Jittrin',
+    desc: 'กด Preview ให้ AI วาดรูปช่อสมจริงแทนโมเดล 3D · Save แล้วรูปติดไปกับช่อ ตะกร้า และ order',
+    fe: 'useDesignPreview · PreviewPanel', guard: 'authen + 3 รูป/วัน/คน', logic: 'prompt จาก DB → Cloudflare FLUX.2 → Save อัป Vercel Blob', db: 'Vercel Blob (URL ใน users / orders)',
+    note: 'รูปยังไม่ขึ้น Blob ตอน Preview (เก็บใน localStorage 10 รูปล่าสุด) อัปเฉพาะตอน Save · สั่งซื้อแล้ว order ก๊อปรูปเป็นไฟล์ของตัวเอง' },
   { key: 'ai', hl: true, cat: 'customer', icon: 'fa-robot', name: 'Ask AI chatbot',
     api: 'POST /ai/ask', who: 'Jittrin',
-    desc: 'ถามสินค้า/ราคา, ให้จัดช่อตามงบ, ถามตะกร้าหรือช่อที่เซฟของตัวเอง, ถามต่อเนื่องได้',
+    desc: 'ถามสินค้า/ราคา, ให้จัดช่อตามงบ (แล้วกด Generate preview ได้), ถามตะกร้าหรือช่อที่เซฟของตัวเอง, ถามต่อเนื่องได้',
     fe: 'ChatWidget.jsx', guard: 'authen + rate limit 10/นาที', logic: 'embedding → $vectorSearch → Gemini', db: 'ai_knowledge',
     note: 'ข้อมูลส่วนตัว (ตะกร้า, ช่อที่เซฟ) ไม่ถูก embed แต่ดึงสดตาม userId ใน token ทำให้ถามข้อมูลของคนอื่นไม่ได้' },
   { key: 'cart', cat: 'customer', icon: 'fa-cart-shopping', name: 'Cart + gift note',
@@ -1001,8 +1118,8 @@ const features = [
     fe: 'ProductsPage.jsx', guard: 'public', logic: 'filter: search, product_type, is_popular, tag', db: 'products',
     note: 'สินค้า 1 ชิ้นมี components (วัตถุดิบ × จำนวน) อ้างอิง inventory_items' },
   { key: 'dashboard', cat: 'customer', icon: 'fa-address-book', name: 'Customer dashboard',
-    api: '/user/address · /custom-design', who: 'Maliwan · Albert · Poramet',
-    desc: 'บัญชี, ที่อยู่จัดส่ง (CRUD), ช่อที่เซฟ (แก้ไข/ลบ/ใส่ตะกร้า), ประวัติการสั่งซื้อ',
+    api: '/user/address · /custom-design · /orders/my-orders', who: 'Maliwan · Albert · Poramet',
+    desc: 'บัญชี, ที่อยู่จัดส่ง (CRUD), ช่อที่เซฟพร้อมรูป AI (แก้ไข/ลบ/ใส่ตะกร้า), ประวัติการสั่งซื้อ + ยกเลิก',
     fe: 'customer_dashboard/*', guard: 'authen', logic: 'จัดการที่อยู่ default', db: 'users.shipping_addresses',
     note: 'ที่อยู่ฝังอยู่ใน document ของ user (embedded) ไม่ได้แยก collection' },
   { key: 'auth', cat: 'customer', icon: 'fa-shield-halved', name: 'Authentication',
@@ -1016,9 +1133,9 @@ const features = [
     fe: 'ShopBlogPage · CustomerReview', guard: 'public', logic: 'Blog.find() · สุ่มรีวิว', db: 'blog · reviews',
     note: 'ฝั่งแอดมินจัดการบทความได้จากหน้า ContentEdit' },
   { key: 'admin', cat: 'admin', icon: 'fa-user-gear', name: 'Admin management',
-    api: 'POST / PUT / DELETE /products', who: 'Withawat · Poramet · Jittrin',
-    desc: 'Overview ยอดขาย, CRUD สินค้า/วัตถุดิบ, รายการ order, จัดการ content, ปุ่ม Sync AI',
-    fe: 'admin_dashboard/*', guard: 'authen + authorize(["admin"])', logic: 'Product CRUD · POST /ai/sync', db: 'products · ai_knowledge',
+    api: '/products · /orders · /dashboard', who: 'Withawat · Poramet · Albert · Jittrin',
+    desc: 'Overview (การ์ด + กราฟยอดขาย / สถานะ order / Top 5 ดอก), CRUD สินค้า/วัตถุดิบ, รายการ order + เปลี่ยนสถานะ, จัดการ content, ปุ่ม Sync AI',
+    fe: 'admin_dashboard/*', guard: 'authen + authorize(["admin"])', logic: 'Product CRUD · aggregate orders · POST /ai/sync', db: 'products · orders · ai_knowledge',
     note: 'ลูกค้าทั่วไปเรียก API เหล่านี้ไม่ได้ (403) เพราะ authorize ตรวจ role จาก token' }
 ];
 
@@ -1094,7 +1211,7 @@ const apiGroups = [
     ['DELETE', '/inventory-items/:id', 'admin', 'ลบวัตถุดิบ'],
   ]},
   { key: 'cart', name: 'Cart', base: '/cart', sum: '1 user = 1 ตะกร้า · ราคาคิดที่ backend', eps: [
-    ['GET', '/cart', 'auth', 'ตะกร้า + ราคาจาก backend (subtotal, service_fee, delivery_fee, total)'],
+    ['GET', '/cart', 'auth', 'ตะกร้า + ราคาจาก backend (subtotal, service_fee, delivery_fee, total) + รูป AI ของช่อที่เซฟ'],
     ['POST', '/cart', 'auth', 'เพิ่มสินค้า (product_id) หรือช่อ custom (custom_specs) · ของซ้ำตอบ 409'],
     ['PATCH', '/cart', 'auth', 'แก้ gift note (ไม่เกิน 200 ตัวอักษร)'],
     ['PATCH', '/cart/:itemId', 'auth', 'เปลี่ยนจำนวน (0 = ลบ)'],
@@ -1104,9 +1221,9 @@ const apiGroups = [
   { key: 'custom', name: 'Custom design', base: '/custom-design', sum: 'ช่อที่ลูกค้าเซฟ (preset 1–5)', eps: [
     ['GET', '/custom-design', 'auth', 'ช่อที่เซฟทั้งหมด เรียงตาม preset + unit_price'],
     ['GET', '/custom-design/:designId', 'auth', 'ช่อเดียว (ใช้ตอนแก้ไข)'],
-    ['POST', '/custom-design', 'auth', 'เซฟช่อใหม่ · preset ซ้ำตอบ 409 PRESET_TAKEN (ส่ง overwrite เพื่อทับ)'],
-    ['PATCH', '/custom-design/:designId', 'auth', 'แก้ช่อ (ส่งเฉพาะ field ที่แก้)'],
-    ['DELETE', '/custom-design/:designId', 'auth', 'ลบช่อ'],
+    ['POST', '/custom-design', 'auth', 'เซฟช่อใหม่ (+ preview_image → อัปขึ้น Vercel Blob) · preset ซ้ำตอบ 409 PRESET_TAKEN (ส่ง overwrite เพื่อทับ)'],
+    ['PATCH', '/custom-design/:designId', 'auth', 'แก้ช่อ (ส่งเฉพาะ field ที่แก้) · ส่งรูปใหม่ = ลบรูปเก่าบน Blob'],
+    ['DELETE', '/custom-design/:designId', 'auth', 'ลบช่อ + ลบรูปบน Blob'],
   ]},
   { key: 'address', name: 'Address', base: '/user/address', sum: 'ที่อยู่จัดส่ง (ฝังใน users)', eps: [
     ['GET', '/user/address', 'auth', 'ที่อยู่ทั้งหมดของตัวเอง'],
@@ -1115,7 +1232,7 @@ const apiGroups = [
     ['DELETE', '/user/address/:addressId', 'auth', 'ลบที่อยู่'],
   ]},
   { key: 'orders', name: 'Orders', base: '/orders', sum: 'สร้าง order หลังจ่ายเงิน · ประวัติ · จัดการแอดมิน', eps: [
-    ['POST', '/orders', 'auth', 'สร้าง order จากตะกร้า (backend คิดราคา + snapshot + ล้างตะกร้า)'],
+    ['POST', '/orders', 'auth', 'สร้าง order จากตะกร้า (backend คิดราคา + snapshot + ก๊อปรูป AI + ล้างตะกร้า)'],
     ['GET', '/orders/my-orders', 'auth', 'ประวัติการสั่งซื้อของตัวเอง (หน้า Purchases)'],
     ['PATCH', '/orders/:orderId/cancel', 'auth', 'ยกเลิก order ของตัวเอง (ก่อน shipped)'],
     ['GET', '/orders', 'admin', 'order ทุก user · query: page, limit, status, search'],
@@ -1135,9 +1252,17 @@ const apiGroups = [
   { key: 'review', name: 'Review', base: '/review', sum: 'รีวิวลูกค้า (หน้า Home)', eps: [
     ['GET', '/review', 'pub', 'รีวิวลูกค้า สุ่มแสดงหน้า Home'],
   ]},
-  { key: 'ai', name: 'AI chatbot', base: '/ai', sum: 'Ask AI (RAG) · sync คลังความรู้', eps: [
-    ['POST', '/ai/ask', 'auth', 'ถาม AI { question, history } · rate limit 10 ครั้ง/นาที/คน'],
+  { key: 'dashboard', name: 'Admin dashboard', base: '/dashboard', sum: 'ตัวเลข + กราฟหน้า Admin Overview', eps: [
+    ['GET', '/dashboard/summary', 'admin', 'การ์ด 4 ใบ: Total Sales, Customers, Flower Stock, Orders'],
+    ['GET', '/dashboard/sales', 'admin', 'ยอดขายรายวัน ?range=7d | 30d | 90d (order ที่ paid และไม่ถูกยกเลิก)'],
+    ['GET', '/dashboard/order-status', 'admin', 'จำนวน order แยกตามสถานะ (Shipment Status)'],
+    ['GET', '/dashboard/top-flowers', 'admin', 'ดอกไม้ที่ถูกใช้มากที่สุด 5 อันดับ'],
+  ]},
+  { key: 'ai', name: 'AI', base: '/ai', sum: 'Ask AI (RAG) · sync คลังความรู้ · AI Preview', eps: [
+    ['POST', '/ai/ask', 'auth', 'ถาม AI { question, history } → answer + design (ช่อที่แนะนำ) · rate limit 10 ครั้ง/นาที/คน'],
     ['POST', '/ai/sync', 'admin', 'อัปเดตคลังความรู้ของ AI หลังแก้สินค้า / วัตถุดิบ'],
+    ['GET', '/ai/preview/quota', 'auth', 'โควตารูปที่เหลือวันนี้ { limit, remaining, promptVersion }'],
+    ['POST', '/ai/preview', 'auth', 'สร้างรูปช่อ { components } → รูป (data URL) + caption · 3 รูป/วัน/คน'],
   ]},
 ];
 const ACCESS_ICON = { pub: '🔓', auth: '🔑', admin: '👑' };
@@ -1222,6 +1347,12 @@ let mode = 'deck';
 
 function markActive() {
   navLinks.forEach((a, i) => a.classList.toggle('active', i === cur));
+  // จอแคบ เมนูล้น → เลื่อนเมนูแนวนอนให้หัวข้อปัจจุบันอยู่กลาง (เลื่อนแค่ nav ไม่เลื่อนหน้า)
+  const a = navLinks[cur];
+  if (a && nav.scrollWidth > nav.clientWidth) {
+    const offset = a.getBoundingClientRect().left - nav.getBoundingClientRect().left;
+    nav.scrollTo({ left: nav.scrollLeft + offset - (nav.clientWidth - a.offsetWidth) / 2, behavior: 'smooth' });
+  }
   document.getElementById('count').textContent = `${cur + 1} / ${slides.length}`;
   document.getElementById('progress').style.width = ((cur + 1) / slides.length * 100) + '%';
 }
