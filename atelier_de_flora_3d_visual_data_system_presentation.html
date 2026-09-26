@@ -105,9 +105,7 @@ body.scroll .slide:nth-child(even) { background: var(--secondary); }
 body.deck main { position: fixed; inset: 0; }
 body.deck .slide {
   position: absolute; inset: 0;
-  /* ไม่ใช้ justify-content: center — เนื้อหาสูงกว่าจอจะล้นขึ้นด้านบนแล้ว scroll กลับไปไม่ได้
-     ให้ .slide-inner { margin: auto } จัดกลางแทน (สูงเกินจอ → ชิดบนและ scroll ได้) */
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: column; justify-content: center;
   padding: calc(var(--bar-h) + 2.2em) clamp(16px, 5vw, 96px) 5.2em;
   overflow-y: auto;
   opacity: 0; visibility: hidden; transform: translateY(12px);
@@ -173,11 +171,21 @@ body.hide-draft .draft { display: none; }
 /* รูปแนวตั้ง: โชว์เต็มรูป (contain) สูงไม่เกินจอ ไม่ครอบตัด caption ด้านล่าง */
 .shot { cursor: zoom-in; border-radius: 14px; overflow: hidden; border: 1px solid var(--border); background: var(--card); display: grid; place-items: center; min-height: 12em; width: fit-content; max-width: 100%; margin-inline: auto; }
 .shot img { display: block; width: auto; max-width: 100%; max-height: 52vh; object-fit: contain; }
+/* สไลด์ 02 Features (โหมดสไลด์ + จอกว้างเท่านั้น): การ์ด 10 ใบ 3 คอลัมน์ = 4 แถว ล้นจอ → 4 คอลัมน์ (3 แถว) · โหมด scroll คง 3 คอลัมน์ */
+@media (min-width: 1001px) {
+  body.deck #featureGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75em; }
+  /* 3 แถวสูงเกือบเต็มจอ → ลดระยะในการ์ดนิดหน่อย (ขนาดตัวอักษรเท่าเดิม) */
+  body.deck #featureGrid .feature { padding: 0.8em 1.1em; }
+  body.deck #featureGrid .feature .icon { margin-bottom: 0.4em; }
+  body.deck #featureGrid .feature .who { padding-top: 0.4em; }
+}
+/* สไลด์ 03 Tech (โหมดสไลด์ + จอกว้างเท่านั้น): กล่องบริการด้านขวามี 5 กล่อง → เรียง 2 คอลัมน์ (3 แถว) ให้ diagram เตี้ยลง
+   หัวข้อด้านบนจะได้ไม่ล้นจอ · คอลัมน์บริการกว้างขึ้นให้ชื่อไม่ตกบรรทัด */
+@media (min-width: 1001px) {
+  body.deck #tech .arch { grid-template-columns: 0.85fr auto 0.85fr auto 1.9fr; }
+  body.deck #tech .arch .stack { grid-template-columns: 1fr 1fr; }
+}
 .shot .missing { padding: 1em; text-align: center; color: var(--muted); font-size: 0.85em; border: 1px dashed var(--border-strong); border-radius: 10px; margin: 1em; }
-/* โหมดสไลด์เท่านั้น: การ์ด feature 10 ใบเรียง 5 คอลัมน์ (2 แถว) ให้พอดีจอ · โหมด scroll คง 3 คอลัมน์เดิม */
-@media (min-width: 1001px) { body.deck #featureGrid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-.arch .stack.tight { gap: 0.35em; }
-.arch .stack.tight .box { padding: 0.45em 0.9em; }
 
 /* flow chain */
 .flow { display: flex; align-items: stretch; gap: 0.5em; flex-wrap: wrap; }
@@ -192,7 +200,9 @@ body.hide-draft .draft { display: none; }
 @media (max-width: 760px) { .flow { flex-direction: column; } .flow .arrow { transform: rotate(90deg); align-self: flex-start; margin-left: 1em; } }
 
 /* ===== Slide: title ===== */
-.title-slide h1 { font-size: 4.2em; font-weight: 600; letter-spacing: -0.01em; }
+.title-slide h1 { font-size: 4.2em; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
+/* หน้าแรกกว้างกว่าหน้าอื่น (ขยายขอบซ้ายขวา) ชื่อร้านจะได้อยู่บรรทัดเดียว · ขนาดตัวอักษร / รูปเท่าเดิม */
+.title-slide .slide-inner { max-width: 1480px; }
 .title-slide h1 em { font-style: italic; color: var(--primary); font-weight: 400; }
 .title-slide .sub { font-size: 1.3em; margin-top: 0.6em; max-width: 30em; }
 .title-slide .meta { display: flex; flex-wrap: wrap; gap: 0.6em; margin-top: 1.8em; }
@@ -205,6 +215,7 @@ body.scroll .title-art { max-height: 520px; }
   min-height: 420px;
   display: block;
   background: radial-gradient(circle at top, #f9f2ea 0%, #f3efe8 42%, #e8e1d9 100%);
+  --poster-color: #f7f4ee; /* พื้นหลัง poster ให้เนียนกับพื้นครีมของภาพนิ่ง */
 }
 @media (max-width: 620px) { .title-slide h1 { font-size: 2.6em; } .title-art model-viewer { min-height: 320px; } }
 
@@ -413,8 +424,10 @@ body.scroll .progress { display: none; }
       </div>
     </div>
     <div class="title-art">
+      <!-- flower.glb ใหญ่ 40 MB โหลดนาน → poster = ภาพนิ่งของโมเดลเดียวกัน โชว์ทันทีระหว่างรอ โหลดเสร็จแล้วเปลี่ยนเป็น 3D หมุนได้ -->
       <model-viewer
         src="https://rri4tg6y27zcjsqa.public.blob.vercel-storage.com/flower.glb"
+        poster="assets/flower-poster.png"
         alt="3D flower model"
         camera-controls
         auto-rotate
@@ -720,7 +733,7 @@ body.scroll .progress { display: none; }
       <div class="link"><i class="fa-solid fa-arrow-right-long"></i>REST /api/v1<br>+ httpOnly cookie</div>
       <div class="box"><i class="fa-brands fa-node-js"></i><b>Backend</b><span>Express 5 + Mongoose 9<br>Render</span></div>
       <div class="link"><i class="fa-solid fa-arrow-right-long"></i></div>
-      <div class="stack tight">
+      <div class="stack">
         <div class="box"><i class="fa-solid fa-leaf"></i><div><b>MongoDB Atlas</b><span>DB FlowerShop + Vector Search</span></div></div>
         <div class="box"><i class="fa-brands fa-stripe-s"></i><div><b>Stripe</b><span>PromptPay QR</span></div></div>
         <div class="box"><i class="fa-solid fa-wand-magic-sparkles"></i><div><b>Google Gemini</b><span>embedding + flash / flash-lite</span></div></div>
@@ -733,7 +746,6 @@ body.scroll .progress { display: none; }
         <table class="stack-table">
           <tr><td>Frontend</td><td><div class="chips"><span class="chip">React 19</span><span class="chip">Vite</span><span class="chip">Tailwind v4</span><span class="chip">shadcn/ui</span><span class="chip">React Router v7</span><span class="chip">axios</span><span class="chip">recharts</span><span class="chip">model-viewer (3D)</span></div></td></tr>
           <tr><td>Backend</td><td><div class="chips"><span class="chip">Node.js</span><span class="chip">Express 5</span><span class="chip">Mongoose 9</span><span class="chip">jsonwebtoken</span><span class="chip">cookie-parser</span><span class="chip">bcrypt</span></div></td></tr>
-          <tr><td>AI &amp; Storage</td><td><div class="chips"><span class="chip">Gemini API</span><span class="chip">Atlas Vector Search</span><span class="chip">Cloudflare Workers AI</span><span class="chip">@vercel/blob</span><span class="chip">localStorage</span></div></td></tr>
           <tr><td>Tools</td><td><div class="chips"><span class="chip">Git / GitHub</span><span class="chip">Miro</span><span class="chip">Figma</span><span class="chip">Claude Code</span></div></td></tr>
         </table>
       </div>
@@ -1357,36 +1369,6 @@ function go(i) {
   markActive();
 }
 
-// ===== ย่อเนื้อหาให้พอดีจอ (โหมด deck เท่านั้น) =====
-// สไลด์ไหนเนื้อหาสูงกว่าจอ → ลด font-size ของ .slide-inner (ทุกอย่างใช้ em เลยย่อตามกันหมด ตัวหนังสือยังคม)
-// สไลด์ที่พอดีอยู่แล้วคง 100%
-// ใช้ binary search หาขนาดใหญ่สุดที่ยังพอดี (ตัวหนังสือเล็กลง → ขึ้นบรรทัดใหม่น้อยลงด้วย ความสูงเลยไม่ลดตามสัดส่วน คำนวณตรงๆ จะย่อเกิน)
-const MIN_FIT = 0.6;
-function fitSlide(slide) {
-  const inner = slide.querySelector('.slide-inner');
-  if (!inner) return;
-  inner.style.fontSize = '';
-  if (mode !== 'deck') return;
-  const cs = getComputedStyle(slide);
-  const avail = slide.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
-  const fits = scale => {
-    inner.style.fontSize = (scale * 100) + '%';
-    return inner.getBoundingClientRect().height <= avail;
-  };
-  if (fits(1)) { inner.style.fontSize = ''; return; }
-  let lo = MIN_FIT, hi = 1; // lo = พอดี (หรือเล็กสุดที่ยอม), hi = ยังล้น
-  for (let i = 0; i < 7; i++) {
-    const mid = (lo + hi) / 2;
-    if (fits(mid)) lo = mid; else hi = mid;
-  }
-  inner.style.fontSize = (lo * 100) + '%';
-}
-const fitAll = () => slides.forEach(fitSlide);
-let fitTimer = null;
-window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitAll, 120); });
-window.addEventListener('load', fitAll);            // รอรูปโหลดเสร็จ (ความสูงรูปเปลี่ยน)
-document.fonts?.ready.then(fitAll);                 // รอฟอนต์ Literata / Plus Jakarta Sans
-
 function setMode(m) {
   mode = m;
   document.body.classList.toggle('deck', m === 'deck');
@@ -1397,7 +1379,6 @@ function setMode(m) {
     : '<i class="fa-solid fa-display"></i><span class="lbl">Slides</span>';
   btn.title = m === 'deck' ? 'เปลี่ยนเป็นโหมดเลื่อนอ่าน (M)' : 'เปลี่ยนเป็นโหมดสไลด์ (M)';
   try { localStorage.setItem('adf-mode', m); } catch (e) {}
-  fitAll(); // deck = ย่อให้พอดีจอ · scroll = คืนขนาดเดิม
   if (m === 'deck') {
     go(cur);
   } else {
