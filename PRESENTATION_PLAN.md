@@ -116,13 +116,17 @@ McKraken = **กลุ่ม #2 เวลา 14:00–14:35** (จาก `time an
    - **Save** → รูปขึ้น Vercel Blob ติดไปกับช่อ (Custom List) → Add to cart → order ก๊อปรูปเก็บเป็นของตัวเอง (order = snapshot)
 3. **AI chatbot "Ask AI"** — ถามสินค้า/ราคา, **"ช่วยจัดช่อ custom ให้แม่ งบ 800"** (ฟอร์ม 2 ช่อง: ให้ใคร/โอกาส + งบ), ถามตะกร้า/ช่อที่เซฟของตัวเอง, ถามต่อเนื่องได้ → ปุ่ม **Generate preview** พาไปหน้า Custom design + สร้างรูปให้อัตโนมัติ
 
-**Demo script** (`TODO` ซ้อมจับเวลา ~4.5 นาที):
-1. login → Ask AI → "ช่วยจัดช่อ custom ให้แม่ งบ 800" → ชี้วิธีคิดราคา → กด **Generate preview**
-2. หน้า Custom design เติมตัวเลือกให้ + ได้รูป AI (ใช้รูปใน history ที่เตรียมไว้ → ขึ้นทันที) → ลองเปลี่ยนดอก 1 ชนิด → ป้ายเตือน → กดรูปใน history กลับมา
-3. **Save** preset → เปิด Custom List เห็นรูป → Add to cart → ตะกร้ามีรูป
-4. ถาม Ask AI "ตะกร้าของฉันรวมเท่าไหร่" → เทียบกับหน้า Cart
-5. Checkout → QR PromptPay (Stripe test mode) → Purchases เห็นรูป + ราคาถูกต้อง
-- ⚠️ **เตรียมก่อนวันพรีเซนต์**: login บัญชี demo แล้ว Preview ช่อที่จะใช้ไว้ล่วงหน้า (รูปอยู่ใน history → กดแล้วขึ้นทันที ไม่ต้องรอ 10–30 วิ ไม่เสียโควตา) · ใช้ browser / บัญชีเดียวกับตอนเตรียม
+**Demo script** — เส้นทางของลูกค้าจริง แล้วปิดด้วย AI เป็น extra (`TODO` ซ้อมจับเวลา ~5 นาที · ผู้ demo: Albert):
+1. **Register → Login** (0:30) — สมัครบัญชีใหม่
+2. **ซื้อของ** (1:30) — เลือกช่อสำเร็จรูป → ใส่ตะกร้า → Checkout → QR PromptPay (Stripe test mode)
+3. **Customer dashboard** (0:30) — บัญชี, ที่อยู่, ประวัติสั่งซื้อ (Purchases) เห็น order ที่เพิ่งสั่ง
+4. **Admin** (1:00) — Overview (การ์ด + กราฟยอดขาย) → รายการ order → เปลี่ยนสถานะ order ที่เพิ่งสั่ง
+5. **Extra: AI** (1:30) — Ask AI "ช่วยจัดช่อ custom ให้แม่ งบ 800" → ชี้วิธีคิดราคา → กด **Generate preview** → หน้า Custom design เติมตัวเลือก + ได้รูป → Save → Add to cart
+   - ถ้าเกินเวลา ข้าม Save / Add to cart ได้
+- ⚠️ **เตรียมก่อนวันพรีเซนต์**:
+  - บัญชี admin login รอไว้ในอีก browser / incognito
+  - history รูป AI แยกตามบัญชี → บัญชีที่เพิ่งสมัครต้องรอรูป 10–30 วิ + ใช้โควตาของบัญชีนั้น · ถ้าอยากให้รูปขึ้นทันที ให้ Preview ช่อที่จะใช้ไว้ล่วงหน้าในบัญชี demo แล้วสลับไปบัญชีนั้นตอนช่วง Extra (browser เดียวกับตอนเตรียม)
+  - flow นี้รอ server 3 จุด (สมัคร / จ่ายเงิน / สร้างรูป) → เปิดเว็บ + backend Render ให้ตื่นก่อน 5 นาที
 - ⚠️ แผนสำรอง: อัดวิดีโอ demo ไว้ก่อน (Render free tier หลับ / quota AI หมด / เน็ตล่ม)
 - ⚠️ อย่าเทส AI รัวๆ วันพรีเซนต์ — quota รายวันของ Gemini reset 14:00 น. (ตรงกับเวลาพรีเซนต์พอดี) · Cloudflare reset 07:00 น.
 
