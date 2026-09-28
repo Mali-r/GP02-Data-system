@@ -358,6 +358,17 @@ body.scroll .title-art { max-height: 520px; }
 .bsm-col h3 { display: flex; align-items: center; gap: 0.5em; }
 .bsm-col .item { border-top: 1px solid var(--border); padding-top: 0.55em; margin-top: 0.55em; font-size: 0.88em; }
 .bsm-col .item b { color: var(--primary-dark); display: block; font-size: 0.95em; }
+/* Miro card ไม่ดันความสูงแถว: สูงเท่าการ์ดข้างๆ แล้วรูปย่อให้พอดี (กดขยายได้) */
+.bsm-miro { display: flex; flex-direction: column; }
+.bsm-miro .item { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+.bsm-miro .shot { position: relative; flex: 1 1 0; min-height: 6em; width: 100%; margin-top: 0.4em; }
+.bsm-miro .shot img { position: absolute; inset: 0; width: 100%; height: 100%; max-height: none; object-fit: contain; }
+@media (min-width: 1001px) { .bsm-miro { contain: size; } }
+@media (max-width: 1000px) { .bsm-miro .shot { flex: none; height: 14em; } }
+.bsm-apply { background: var(--primary-soft); }
+.bsm-apply h3 { display: flex; align-items: center; gap: 0.5em; margin-bottom: 0.3em; }
+.bsm-apply .item { font-size: 0.85em; }
+.bsm-apply .item b { color: var(--primary-dark); display: block; font-size: 1.02em; margin-bottom: 0.2em; }
 
 /* ===== Closing ===== */
 .closing { text-align: center; }
@@ -998,7 +1009,7 @@ body.scroll .progress { display: none; }
       <h2>Behavior · Skill · Mindset</h2>
       <p class="lead">สิ่งที่ได้ฝึกจริงระหว่างทำโปรเจกต์ <a href="#" data-zoom="assets/bsm.png" class="small">ดูกรอบ BSM ของคลาส</a></p>
     </div>
-    <div class="grid g3" style="align-items:start">
+    <div class="grid g3">
       <div class="card bsm-col">
         <h3><i class="fa-solid fa-seedling" style="color:var(--primary)"></i> Mindsets</h3>
         <div class="item"><b>Growth Mindset</b>เรียน RAG / vector search / Gemini API / AI สร้างรูป ที่ไม่ได้อยู่ในหลักสูตร แล้วนำมาใช้จริง</div>
@@ -1013,21 +1024,30 @@ body.scroll .progress { display: none; }
         <div class="item"><b>Time Management</b>ทุกคนจัดสรรเวลาให้เหมาะกับการเรียนในแค้มป์</div>
         <div class="item"><b>Orientation to details</b>ทีมช่วยกันลงรายละเอียดในการแบ่งงานให้ชัดเจน เช่นการแบ่งงานละเอียดถึงชื่อไฟล์ โครงสร้างไฟล์ที่เราเซฟ ชื่อ api , middleware ตัวไหนมีบ้างเป็นต้น</div>
       </div>
-      <div class="card bsm-col">
+      <div class="card bsm-col bsm-miro">
         <h3><i class="fa-solid fa-chalkboard" style="color:var(--primary)"></i> ตัวอย่างการวางแผนบน Miro</h3>
         <div class="item"><b>Sprint 2 · Page flow</b>
-          <div class="shot" data-zoom="assets/Sprint2_planning.JPG" style="min-height:0; margin-top:.4em">
-            <img src="assets/Sprint2_planning.JPG" alt="Sprint 2 planning บน Miro: flow ทุกหน้า แบ่งสีตามโฟลเดอร์ และตัวอย่างชื่อ branch" style="max-height:22vh">
+          <div class="shot" data-zoom="assets/Sprint2_planning.JPG">
+            <img src="assets/Sprint2_planning.JPG" alt="Sprint 2 planning บน Miro: flow ทุกหน้า แบ่งสีตามโฟลเดอร์ และตัวอย่างชื่อ branch">
           </div>
         </div>
         <div class="item"><b>Sprint 3 · API specification</b>
-          <div class="shot" data-zoom="assets/Sprint3_planning.JPG" style="min-height:0; margin-top:.4em">
-            <img src="assets/Sprint3_planning.JPG" alt="Sprint 3 planning บน Miro: API specification จาก model ไป route, middleware และ controller" style="max-height:22vh">
+          <div class="shot" data-zoom="assets/Sprint3_planning.JPG">
+            <img src="assets/Sprint3_planning.JPG" alt="Sprint 3 planning บน Miro: API specification จาก model ไป route, middleware และ controller">
           </div>
         </div>
         <p class="er-cap" style="text-align:center"><i class="fa-solid fa-magnifying-glass-plus"></i> กดที่รูปเพื่อขยาย</p>
       </div>
     </div>
+    <div class="card bsm-apply" style="margin-top:1em">
+      <h3><i class="fa-solid fa-briefcase" style="color:var(--primary)"></i> นำไปใช้ในการทำงานจริง</h3>
+      <div class="grid g3">
+        <div class="item"><b>คุยให้ชัดตั้งแต่ต้น → ไม่มีงานซ้ำซ้อน</b>ทุกคนเห็นภาพรวมและรู้ขอบเขตงานของตัวเองตรงกัน ไม่มีใครทำงานชิ้นเดียวกันซ้ำ หรือทำไปคนละทิศ</div>
+        <div class="item"><b>วางแผนร่วมกันก่อน → เจอปัญหาก่อนเกิดจริง</b>ปัญหาอย่างชื่อ API ไม่ตรงกัน หรือโครงสร้างไฟล์ชนกัน ถูกจับได้ตั้งแต่ตอนวางแผน แก้ง่ายและใช้เวลาน้อยกว่าแก้ทีหลัง</div>
+        <div class="item"><b>ทำงานเป็นทีมได้มีประสิทธิภาพขึ้น</b>ทุกคนทำงานคู่ขนานได้โดยไม่ต้องรอกัน ประชุมสั้นลงเพราะมีแผนให้อ้างอิง และการ review ทำให้งานไม่ติดอยู่ที่คนใดคนหนึ่ง</div>
+      </div>
+    </div>
+    <aside class="notes"><b>Notes:</b> จากรูป Sprint 2 ทีมเราวาด flow ทุกหน้าและแบ่งเจ้าของงานตามสีไว้ก่อน ทุกคนจึงรู้ว่าใครทำหน้าไหน ไม่มีงานซ้ำกัน · Sprint 3 เราตกลง API ร่วมกันก่อนเขียนโค้ด ทำให้ frontend กับ backend ทำงานพร้อมกันได้โดยไม่ต้องแก้ทีหลัง · ถ้าเอาไปใช้ในการทำงานจริง การสื่อสารที่ชัดตั้งแต่ต้นและการวางแผนร่วมกันจะช่วยป้องกันงานซ้ำซ้อน ลดเวลาที่จะเสียไปกับการแก้ปัญหาในอนาคต และทำให้ทีมทำงานได้มีประสิทธิภาพขึ้น</aside>
   </div>
 </section>
 
